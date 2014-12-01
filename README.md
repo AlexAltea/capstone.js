@@ -4,6 +4,8 @@ Capstone.js
 
 Port of the [Capstone](https://github.com/aquynh/capstone) disassembler framework for JavaScript. Powered by [Emscripten](https://github.com/kripken/emscripten).
 
+**Note:** _Capstone _ is a lightweight multi-architecture disassembly framework originally developed by Nguyen Anh Quynh and released under BSD license. More information about contributors and license terms can be found in the files `CREDITS.TXT` and `LICENSE.TXT` of the *capstone* submodule in this repository.
+
 ### Deploy
 To build the Capstone.js framework, clone the *master* branch of this repository, and do the following:
 
