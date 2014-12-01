@@ -4,3 +4,9 @@
 
 # Dependencies NodeJS
 node_modules/
+
+# Emscripten builds
+*.out.js
+
+# Capstone.js (TODO: Remove this entry once Capstone.js is production ready)
+dist/

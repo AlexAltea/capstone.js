@@ -13,7 +13,9 @@ npm install
 bower install
 ```
 
-**2.** Finally, build the source with:
+**2.** Install the lastest [Python 2.x (64-bit)](https://www.python.org/downloads/) and the [Emscripten SDK](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html). Follow the respective instructions and make sure all environment variables are configured correctly. The command `emcc` should launch the Emscripten C compiler.
+
+**3.** Finally, build the source with:
 ```
 grunt build
 ```

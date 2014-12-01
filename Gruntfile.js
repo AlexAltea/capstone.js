@@ -10,11 +10,16 @@ module.exports = function (grunt) {
 
     // Project configuration
     grunt.initConfig({
+        exec: {
+            emscripten: {
+                command: 'emcc -o src/capstone.out.js capstone/main.c'
+            }
+        },
         uglify: {
             dist: {
                 files: {
                     'dist/capstone.min.js': [
-                        'dist/capstone.js'
+                        'src/**/*.js'
                     ]
                 }
             }
@@ -55,6 +60,7 @@ module.exports = function (grunt) {
 
     ]);
     grunt.registerTask('build', [
+        'exec:emscripten',
         'uglify'
     ]);
     grunt.registerTask('default', [
