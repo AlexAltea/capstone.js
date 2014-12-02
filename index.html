@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="CapstoneJS">
+    <head>
+        <title>Capstone.js</title>
+
+        <!-- External stylesheets -->
+        <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- External fonts -->
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+        <!-- Style -->
+        <style>
+            body {
+                font-family: 'Open Sans', sans-serif;
+                padding-top: 50px;
+                padding-bottom: 20px;
+            }
+            .jumbotron {
+                background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTM0OSIgaGVpZ2h0PSI2NTEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGc+PHBhdGggZD0iTS0zNSwtOTJMLTkwLDM4NEwtNTMsMjIxWiIgZmlsbD0iI2ZmZmJkOSIgc3Ryb2tlPSIjZmZmYmQ5Ii8+PHBhdGggZD0iTS0zNSwtOTJMLTUzLDIyMUwtMTksNzlaIiBmaWxsPSIjZmZmZGYzIiBzdHJva2U9IiNmZmZkZjMiLz48cGF0aCBkPSJNLTM1LC05MkwtMTksNzlMNTYsOTJaIiBmaWxsPSIjZmZmYmYzIiBzdHJva2U9IiNmZmZiZjMiLz48cGF0aCBkPSJNLTM1LC05Mkw1Niw5Mkw5OSwtMTA0WiIgZmlsbD0iI2ZmZjlmMSIgc3Ryb2tlPSIjZmZmOWYxIi8+PHBhdGggZD0iTTk5LC0xMDRMNTYsOTJMMjEzLDU0WiIgZmlsbD0iI2ZmZjZlNyIgc3Ryb2tlPSIjZmZmNmU3Ii8+PHBhdGggZD0iTTk5LC0xMDRMMjEzLDU0TDIwOCwtMTAxWiIgZmlsbD0iI2ZmZjNlMyIgc3Ryb2tlPSIjZmZmM2UzIi8+PHBhdGggZD0iTTk5LC0xMDRMMjA4LC0xMDFMNzUxLC05MVoiIGZpbGw9IiNmZWU5Y2UiIHN0cm9rZT0iI2ZlZTljZSIvPjxwYXRoIGQ9Ik05OSwtMTA0TDc1MSwtOTFMMTQ4MiwtODlaIiBmaWxsPSIjZmFiYWE3IiBzdHJva2U9IiNmYWJhYTciLz48cGF0aCBkPSJNMjA4LC0xMDFMMjEzLDU0TDMwMCwtNjVaIiBmaWxsPSIjZmZlZmRiIiBzdHJva2U9IiNmZmVmZGIiLz48cGF0aCBkPSJNMjA4LC0xMDFMMzAwLC02NUwzODksLTc0WiIgZmlsbD0iI2ZlZWNkNCIgc3Ryb2tlPSIjZmVlY2Q0Ii8+PHBhdGggZD0iTTIwOCwtMTAxTDM4OSwtNzRMNTcxLC04N1oiIGZpbGw9IiNmZWU2Y2IiIHN0cm9rZT0iI2ZlZTZjYiIvPjxwYXRoIGQ9Ik0yMDgsLTEwMUw1NzEsLTg3TDc1MSwtOTFaIiBmaWxsPSIjZmVkZGMxIiBzdHJva2U9IiNmZWRkYzEiLz48cGF0aCBkPSJNMzAwLC02NUwyMTMsNTRMMzAwLDk4WiIgZmlsbD0iI2ZlZWVkNCIgc3Ryb2tlPSIjZmVlZWQ0Ii8+PHBhdGggZD0iTTMwMCwtNjVMMzAwLDk4TDM4OSwtNzRaIiBmaWxsPSIjZmVlYWQwIiBzdHJva2U9IiNmZWVhZDAiLz48cGF0aCBkPSJNMzg5LC03NEwzMDAsOThMNDQzLDc0WiIgZmlsbD0iI2ZlZTdjOSIgc3Ryb2tlPSIjZmVlN2M5Ii8+PHBhdGggZD0iTTM4OSwtNzRMNDQzLDc0TDU0MywyNVoiIGZpbGw9IiNmZWUxYzQiIHN0cm9rZT0iI2ZlZTFjNCIvPjxwYXRoIGQ9Ik0zODksLTc0TDU0MywyNUw1NzEsLTg3WiIgZmlsbD0iI2ZlZGVjMiIgc3Ryb2tlPSIjZmVkZWMyIi8+PHBhdGggZD0iTTU3MSwtODdMNTQzLDI1TDY5OCwtMTVaIiBmaWxsPSIjZmVkMGI1IiBzdHJva2U9IiNmZWQwYjUiLz48cGF0aCBkPSJNNTcxLC04N0w2OTgsLTE1TDc1MSwtOTFaIiBmaWxsPSIjZmVjNmFjIiBzdHJva2U9IiNmZWM2YWMiLz48cGF0aCBkPSJNNjk4LC0xNUw1NDMsMjVMNjU3LDYxWiIgZmlsbD0iI2ZlY2NhZiIgc3Ryb2tlPSIjZmVjY2FmIi8+PHBhdGggZD0iTTY5OCwtMTVMNjU3LDYxTDc0NSwyN1oiIGZpbGw9IiNmZGMzYTgiIHN0cm9rZT0iI2ZkYzNhOCIvPjxwYXRoIGQ9Ik02OTgsLTE1TDc0NSwyN0w3NTEsLTkxWiIgZmlsbD0iI2ZjYzBhOSIgc3Ryb2tlPSIjZmNjMGE5Ii8+PHBhdGggZD0iTTc1MSwtOTFMNzQ1LDI3TDg5OSw0NloiIGZpbGw9IiNmOWI4YTYiIHN0cm9rZT0iI2Y5YjhhNiIvPjxwYXRoIGQ9Ik03NTEsLTkxTDg5OSw0Nkw5NDQsLTE5WiIgZmlsbD0iI2Y2YWZhMSIgc3Ryb2tlPSIjZjZhZmExIi8+PHBhdGggZD0iTTc1MSwtOTFMOTQ0LC0xOUwxMTQ2LC04N1oiIGZpbGw9IiNmMGEyOTciIHN0cm9rZT0iI2YwYTI5NyIvPjxwYXRoIGQ9Ik03NTEsLTkxTDExNDYsLTg3TDE0ODIsLTg5WiIgZmlsbD0iI2Q2ODc4NSIgc3Ryb2tlPSIjZDY4Nzg1Ii8+PHBhdGggZD0iTTk0NCwtMTlMODk5LDQ2TDEwMDcsMjdaIiBmaWxsPSIjZjBhMTk1IiBzdHJva2U9IiNmMGExOTUiLz48cGF0aCBkPSJNOTQ0LC0xOUwxMDA3LDI3TDk4OCwtMjFaIiBmaWxsPSIjZWU5ZDkzIiBzdHJva2U9IiNlZTlkOTMiLz48cGF0aCBkPSJNOTQ0LC0xOUw5ODgsLTIxTDExNDYsLTg3WiIgZmlsbD0iI2U5OTY4ZSIgc3Ryb2tlPSIjZTk5NjhlIi8+PHBhdGggZD0iTTk4OCwtMjFMMTAwNywyN0wxMTQ2LC04N1oiIGZpbGw9IiNlNTkzOGMiIHN0cm9rZT0iI2U1OTM4YyIvPjxwYXRoIGQ9Ik0xMTQ2LC04N0wxMDA3LDI3TDExNjYsNzBaIiBmaWxsPSIjZGE4YTg2IiBzdHJva2U9IiNkYThhODYiLz48cGF0aCBkPSJNMTE0NiwtODdMMTE2Niw3MEwxMjY4LC0xNloiIGZpbGw9IiNjYTgwODAiIHN0cm9rZT0iI2NhODA4MCIvPjxwYXRoIGQ9Ik0xMTQ2LC04N0wxMjY4LC0xNkwxMzQ3LC02OVoiIGZpbGw9IiNiZjgwODAiIHN0cm9rZT0iI2JmODA4MCIvPjxwYXRoIGQ9Ik0xMTQ2LC04N0wxMzQ3LC02OUwxNDgyLC04OVoiIGZpbGw9IiNiMjgwODAiIHN0cm9rZT0iI2IyODA4MCIvPjxwYXRoIGQ9Ik0xMjY4LC0xNkwxMTY2LDcwTDEyNTAsODZaIiBmaWxsPSIjYzM4MDdiIiBzdHJva2U9IiNjMzgwN2IiLz48cGF0aCBkPSJNMTI2OCwtMTZMMTI1MCw4NkwxMzkzLDU2WiIgZmlsbD0iI2I2ODA3YyIgc3Ryb2tlPSIjYjY4MDdjIi8+PHBhdGggZD0iTTEyNjgsLTE2TDEzOTMsNTZMMTM0NywtNjlaIiBmaWxsPSIjYjA4MDgwIiBzdHJva2U9IiNiMDgwODAiLz48cGF0aCBkPSJNMTM0NywtNjlMMTM5Myw1NkwxNDgyLC04OVoiIGZpbGw9IiNhMzgwODAiIHN0cm9rZT0iI2EzODA4MCIvPjxwYXRoIGQ9Ik0xNDgyLC04OUwxMzkzLDU2TDE1MzUsODdaIiBmaWxsPSIjOTc4MDdlIiBzdHJva2U9IiM5NzgwN2UiLz48cGF0aCBkPSJNLTE5LDc5TC01MywyMjFMODIsMTQyWiIgZmlsbD0iI2ZmZmFkOSIgc3Ryb2tlPSIjZmZmYWQ5Ii8+PHBhdGggZD0iTS0xOSw3OUw4MiwxNDJMNTYsOTJaIiBmaWxsPSIjZmZmOWUzIiBzdHJva2U9IiNmZmY5ZTMiLz48cGF0aCBkPSJNNTYsOTJMODIsMTQyTDIxMyw1NFoiIGZpbGw9IiNmZmY2ZGQiIHN0cm9rZT0iI2ZmZjZkZCIvPjxwYXRoIGQ9Ik0yMTMsNTRMODIsMTQyTDE3NSwyMThaIiBmaWxsPSIjZmZmNGNjIiBzdHJva2U9IiNmZmY0Y2MiLz48cGF0aCBkPSJNMjEzLDU0TDE3NSwyMThMMzAwLDk4WiIgZmlsbD0iI2ZmZjBjNyIgc3Ryb2tlPSIjZmZmMGM3Ii8+PHBhdGggZD0iTTMwMCw5OEwxNzUsMjE4TDI5MCwyMTZaIiBmaWxsPSIjZmVlYmI0IiBzdHJva2U9IiNmZWViYjQiLz48cGF0aCBkPSJNMzAwLDk4TDI5MCwyMTZMNDM0LDE3MVoiIGZpbGw9IiNmZWU4YWQiIHN0cm9rZT0iI2ZlZThhZCIvPjxwYXRoIGQ9Ik0zMDAsOThMNDM0LDE3MUw0NDMsNzRaIiBmaWxsPSIjZmVlNWI4IiBzdHJva2U9IiNmZWU1YjgiLz48cGF0aCBkPSJNNDQzLDc0TDQzNCwxNzFMNTExLDE5NFoiIGZpbGw9IiNmZWRmYTkiIHN0cm9rZT0iI2ZlZGZhOSIvPjxwYXRoIGQ9Ik00NDMsNzRMNTExLDE5NEw1NDMsMjVaIiBmaWxsPSIjZmVkZWI1IiBzdHJva2U9IiNmZWRlYjUiLz48cGF0aCBkPSJNNTQzLDI1TDUxMSwxOTRMNjU3LDYxWiIgZmlsbD0iI2ZlZDRhZSIgc3Ryb2tlPSIjZmVkNGFlIi8+PHBhdGggZD0iTTY1Nyw2MUw1MTEsMTk0TDYxNiwyMTBaIiBmaWxsPSIjZmVkMDk3IiBzdHJva2U9IiNmZWQwOTciLz48cGF0aCBkPSJNNjU3LDYxTDYxNiwyMTBMODIyLDE1NFoiIGZpbGw9IiNmZGMzOTAiIHN0cm9rZT0iI2ZkYzM5MCIvPjxwYXRoIGQ9Ik02NTcsNjFMODIyLDE1NEw3NDUsMjdaIiBmaWxsPSIjZmJiZWExIiBzdHJva2U9IiNmYmJlYTEiLz48cGF0aCBkPSJNNzQ1LDI3TDgyMiwxNTRMODk5LDQ2WiIgZmlsbD0iI2Y4YjU5ZCIgc3Ryb2tlPSIjZjhiNTlkIi8+PHBhdGggZD0iTTg5OSw0Nkw4MjIsMTU0TDg1NywxNjVaIiBmaWxsPSIjZjZhZjhkIiBzdHJva2U9IiNmNmFmOGQiLz48cGF0aCBkPSJNODk5LDQ2TDg1NywxNjVMMTAyNywxNzNaIiBmaWxsPSIjZjFhNDgzIiBzdHJva2U9IiNmMWE0ODMiLz48cGF0aCBkPSJNODk5LDQ2TDEwMjcsMTczTDEwMDcsMjdaIiBmaWxsPSIjZWU5ZDhiIiBzdHJva2U9IiNlZTlkOGIiLz48cGF0aCBkPSJNMTAwNywyN0wxMDI3LDE3M0wxMTY2LDcwWiIgZmlsbD0iI2UxOTA4MCIgc3Ryb2tlPSIjZTE5MDgwIi8+PHBhdGggZD0iTTExNjYsNzBMMTAyNywxNzNMMTE1MSwyMDBaIiBmaWxsPSIjZDg4ODY5IiBzdHJva2U9IiNkODg4NjkiLz48cGF0aCBkPSJNMTE2Niw3MEwxMTUxLDIwMEwxMjUwLDg2WiIgZmlsbD0iI2NiN2Y2YyIgc3Ryb2tlPSIjY2I3ZjZjIi8+PHBhdGggZD0iTTEyNTAsODZMMTE1MSwyMDBMMTI0NCwyMTZaIiBmaWxsPSIjYzY3ZTVkIiBzdHJva2U9IiNjNjdlNWQiLz48cGF0aCBkPSJNMTI1MCw4NkwxMjQ0LDIxNkwxMzg0LDE0MVoiIGZpbGw9IiNiODdmNjMiIHN0cm9rZT0iI2I4N2Y2MyIvPjxwYXRoIGQ9Ik0xMjUwLDg2TDEzODQsMTQxTDEzOTMsNTZaIiBmaWxsPSIjYWU4MDc0IiBzdHJva2U9IiNhZTgwNzQiLz48cGF0aCBkPSJNMTM5Myw1NkwxMzg0LDE0MUwxNDY4LDE0MloiIGZpbGw9IiNhMTdmNmUiIHN0cm9rZT0iI2ExN2Y2ZSIvPjxwYXRoIGQ9Ik0xMzkzLDU2TDE0NjgsMTQyTDE1MzUsODdaIiBmaWxsPSIjOTg4MDczIiBzdHJva2U9IiM5ODgwNzMiLz48cGF0aCBkPSJNMTUzNSw4N0wxNDY4LDE0MkwxNDkzLDI1NloiIGZpbGw9IiM5MjdmNWYiIHN0cm9rZT0iIzkyN2Y1ZiIvPjxwYXRoIGQ9Ik0xNTM1LDg3TDE0OTMsMjU2TDE1MTksNDEwWiIgZmlsbD0iIzhmNmQ0ZCIgc3Ryb2tlPSIjOGY2ZDRkIi8+PHBhdGggZD0iTTE1MzUsODdMMTUxOSw0MTBMMTUyOCw3NDZaIiBmaWxsPSIjOGMzOTI5IiBzdHJva2U9IiM4YzM5MjkiLz48cGF0aCBkPSJNLTUzLDIyMUwtOTAsMzg0TC01MywzMDZaIiBmaWxsPSIjZmZkYWI5IiBzdHJva2U9IiNmZmRhYjkiLz48cGF0aCBkPSJNLTUzLDIyMUwtNTMsMzA2TDIzLDMzOVoiIGZpbGw9IiNmZmRkYmEiIHN0cm9rZT0iI2ZmZGRiYSIvPjxwYXRoIGQ9Ik0tNTMsMjIxTDIzLDMzOUw4MiwxNDJaIiBmaWxsPSIjZmZlY2M1IiBzdHJva2U9IiNmZmVjYzUiLz48cGF0aCBkPSJNODIsMTQyTDIzLDMzOUwxNjIsMzAzWiIgZmlsbD0iI2ZmZTFiNiIgc3Ryb2tlPSIjZmZlMWI2Ii8+PHBhdGggZD0iTTgyLDE0MkwxNjIsMzAzTDE3NSwyMThaIiBmaWxsPSIjZmZlYWJhIiBzdHJva2U9IiNmZmVhYmEiLz48cGF0aCBkPSJNMTc1LDIxOEwxNjIsMzAzTDI5MCwyMTZaIiBmaWxsPSIjZmZlMWFkIiBzdHJva2U9IiNmZmUxYWQiLz48cGF0aCBkPSJNMjkwLDIxNkwxNjIsMzAzTDMzOSwzMzdaIiBmaWxsPSIjZmVkMDlhIiBzdHJva2U9IiNmZWQwOWEiLz48cGF0aCBkPSJNMjkwLDIxNkwzMzksMzM3TDQwNywzMjBaIiBmaWxsPSIjZmVjOThmIiBzdHJva2U9IiNmZWM5OGYiLz48cGF0aCBkPSJNMjkwLDIxNkw0MDcsMzIwTDQzNCwxNzFaIiBmaWxsPSIjZmVkODljIiBzdHJva2U9IiNmZWQ4OWMiLz48cGF0aCBkPSJNNDM0LDE3MUw0MDcsMzIwTDUxMSwxOTRaIiBmaWxsPSIjZmVkNDk4IiBzdHJva2U9IiNmZWQ0OTgiLz48cGF0aCBkPSJNNTExLDE5NEw0MDcsMzIwTDU3NSwzMTZaIiBmaWxsPSIjZmVjMzg3IiBzdHJva2U9IiNmZWMzODciLz48cGF0aCBkPSJNNTExLDE5NEw1NzUsMzE2TDYxNiwyMTBaIiBmaWxsPSIjZmVjNjhhIiBzdHJva2U9IiNmZWM2OGEiLz48cGF0aCBkPSJNNjE2LDIxMEw1NzUsMzE2TDYzNywyOTZaIiBmaWxsPSIjZmViNTdhIiBzdHJva2U9IiNmZWI1N2EiLz48cGF0aCBkPSJNNjE2LDIxMEw2MzcsMjk2TDgyMiwxNTRaIiBmaWxsPSIjZmRiOTdmIiBzdHJva2U9IiNmZGI5N2YiLz48cGF0aCBkPSJNODIyLDE1NEw2MzcsMjk2TDgxNiwzMjRaIiBmaWxsPSIjZmJhODczIiBzdHJva2U9IiNmYmE4NzMiLz48cGF0aCBkPSJNODIyLDE1NEw4MTYsMzI0TDg5MiwyNzFaIiBmaWxsPSIjZjdhMDcxIiBzdHJva2U9IiNmN2EwNzEiLz48cGF0aCBkPSJNODIyLDE1NEw4OTIsMjcxTDg1NywxNjVaIiBmaWxsPSIjZjZhOTdhIiBzdHJva2U9IiNmNmE5N2EiLz48cGF0aCBkPSJNODU3LDE2NUw4OTIsMjcxTDEwMjcsMTczWiIgZmlsbD0iI2YxOWQ3MSIgc3Ryb2tlPSIjZjE5ZDcxIi8+PHBhdGggZD0iTTEwMjcsMTczTDg5MiwyNzFMMTA1MiwyODBaIiBmaWxsPSIjZWQ4YzYxIiBzdHJva2U9IiNlZDhjNjEiLz48cGF0aCBkPSJNMTAyNywxNzNMMTA1MiwyODBMMTE1MSwyMDBaIiBmaWxsPSIjZGY4NDVkIiBzdHJva2U9IiNkZjg0NWQiLz48cGF0aCBkPSJNMTE1MSwyMDBMMTA1MiwyODBMMTEzMiwzNDBaIiBmaWxsPSIjZDk3MDRjIiBzdHJva2U9IiNkOTcwNGMiLz48cGF0aCBkPSJNMTE1MSwyMDBMMTEzMiwzNDBMMTIzMywzMTRaIiBmaWxsPSIjY2U2MzQzIiBzdHJva2U9IiNjZTYzNDMiLz48cGF0aCBkPSJNMTE1MSwyMDBMMTIzMywzMTRMMTI0NCwyMTZaIiBmaWxsPSIjYzc3MDRmIiBzdHJva2U9IiNjNzcwNGYiLz48cGF0aCBkPSJNMTI0NCwyMTZMMTIzMywzMTRMMTM1NiwyODdaIiBmaWxsPSIjYmE2NjQ2IiBzdHJva2U9IiNiYTY2NDYiLz48cGF0aCBkPSJNMTI0NCwyMTZMMTM1NiwyODdMMTM4NCwxNDFaIiBmaWxsPSIjYjE3NTU0IiBzdHJva2U9IiNiMTc1NTQiLz48cGF0aCBkPSJNMTM4NCwxNDFMMTM1NiwyODdMMTQ5MywyNTZaIiBmaWxsPSIjYTI3MzUyIiBzdHJva2U9IiNhMjczNTIiLz48cGF0aCBkPSJNMTM4NCwxNDFMMTQ5MywyNTZMMTQ2OCwxNDJaIiBmaWxsPSIjOWI3YzViIiBzdHJva2U9IiM5YjdjNWIiLz48cGF0aCBkPSJNLTUzLDMwNkwtOTAsMzg0TDIzLDMzOVoiIGZpbGw9IiNmZmNkYWUiIHN0cm9rZT0iI2ZmY2RhZSIvPjxwYXRoIGQ9Ik0yMywzMzlMLTkwLDM4NEw3OCw0NTBaIiBmaWxsPSIjZmZiY2EzIiBzdHJva2U9IiNmZmJjYTMiLz48cGF0aCBkPSJNMjMsMzM5TDc4LDQ1MEwxNjIsMzAzWiIgZmlsbD0iI2ZmYzA5ZCIgc3Ryb2tlPSIjZmZjMDlkIi8+PHBhdGggZD0iTTE2MiwzMDNMNzgsNDUwTDE4NCw0NjNaIiBmaWxsPSIjZmZiMjkyIiBzdHJva2U9IiNmZmIyOTIiLz48cGF0aCBkPSJNMTYyLDMwM0wxODQsNDYzTDMxNiwzOTZaIiBmaWxsPSIjZmZiMzhiIiBzdHJva2U9IiNmZmIzOGIiLz48cGF0aCBkPSJNMTYyLDMwM0wzMTYsMzk2TDMzOSwzMzdaIiBmaWxsPSIjZmViYzhhIiBzdHJva2U9IiNmZWJjOGEiLz48cGF0aCBkPSJNMzM5LDMzN0wzMTYsMzk2TDQwNywzMjBaIiBmaWxsPSIjZmViNjgwIiBzdHJva2U9IiNmZWI2ODAiLz48cGF0aCBkPSJNNDA3LDMyMEwzMTYsMzk2TDQ1Miw0NDlaIiBmaWxsPSIjZmVhODc5IiBzdHJva2U9IiNmZWE4NzkiLz48cGF0aCBkPSJNNDA3LDMyMEw0NTIsNDQ5TDUzNiw0MTVaIiBmaWxsPSIjZmVhMDcyIiBzdHJva2U9IiNmZWEwNzIiLz48cGF0aCBkPSJNNDA3LDMyMEw1MzYsNDE1TDU3NSwzMTZaIiBmaWxsPSIjZmVhYTc0IiBzdHJva2U9IiNmZWFhNzQiLz48cGF0aCBkPSJNNTc1LDMxNkw1MzYsNDE1TDY4NiwzOTlaIiBmaWxsPSIjZmU5NjY1IiBzdHJva2U9IiNmZTk2NjUiLz48cGF0aCBkPSJNNTc1LDMxNkw2ODYsMzk5TDYzNywyOTZaIiBmaWxsPSIjZmU5ZDY2IiBzdHJva2U9IiNmZTlkNjYiLz48cGF0aCBkPSJNNjM3LDI5Nkw2ODYsMzk5TDc4MCwzODhaIiBmaWxsPSIjZmQ4ZDVjIiBzdHJva2U9IiNmZDhkNWMiLz48cGF0aCBkPSJNNjM3LDI5Nkw3ODAsMzg4TDgxNiwzMjRaIiBmaWxsPSIjZmI4ZjVkIiBzdHJva2U9IiNmYjhmNWQiLz48cGF0aCBkPSJNODE2LDMyNEw3ODAsMzg4TDg3MSw0MDBaIiBmaWxsPSIjZjg3YzU1IiBzdHJva2U9IiNmODdjNTUiLz48cGF0aCBkPSJNODE2LDMyNEw4NzEsNDAwTDg5MiwyNzFaIiBmaWxsPSIjZjY4MjU2IiBzdHJva2U9IiNmNjgyNTYiLz48cGF0aCBkPSJNODkyLDI3MUw4NzEsNDAwTDEwMTQsMzk1WiIgZmlsbD0iI2YxNzE0YyIgc3Ryb2tlPSIjZjE3MTRjIi8+PHBhdGggZD0iTTg5MiwyNzFMMTAxNCwzOTVMMTA1MiwyODBaIiBmaWxsPSIjZWQ3NDRiIiBzdHJva2U9IiNlZDc0NGIiLz48cGF0aCBkPSJNMTA1MiwyODBMMTAxNCwzOTVMMTEzMiwzNDBaIiBmaWxsPSIjZTE2MTNlIiBzdHJva2U9IiNlMTYxM2UiLz48cGF0aCBkPSJNMTEzMiwzNDBMMTAxNCwzOTVMMTEyNiw0NDBaIiBmaWxsPSIjZGQ0ZTM1IiBzdHJva2U9IiNkZDRlMzUiLz48cGF0aCBkPSJNMTEzMiwzNDBMMTEyNiw0NDBMMTIzMywzMTRaIiBmaWxsPSIjY2Y0YjMyIiBzdHJva2U9IiNjZjRiMzIiLz48cGF0aCBkPSJNMTIzMywzMTRMMTEyNiw0NDBMMTI5Niw0NjJaIiBmaWxsPSIjYzUzZDJiIiBzdHJva2U9IiNjNTNkMmIiLz48cGF0aCBkPSJNMTIzMywzMTRMMTI5Niw0NjJMMTM0OSwzOTlaIiBmaWxsPSIjYjg0MTJkIiBzdHJva2U9IiNiODQxMmQiLz48cGF0aCBkPSJNMTIzMywzMTRMMTM0OSwzOTlMMTM1NiwyODdaIiBmaWxsPSIjYjQ1MjM0IiBzdHJva2U9IiNiNDUyMzQiLz48cGF0aCBkPSJNMTM1NiwyODdMMTM0OSwzOTlMMTUxOSw0MTBaIiBmaWxsPSIjYTI0OTMwIiBzdHJva2U9IiNhMjQ5MzAiLz48cGF0aCBkPSJNMTM1NiwyODdMMTUxOSw0MTBMMTQ5MywyNTZaIiBmaWxsPSIjOWE1NzM4IiBzdHJva2U9IiM5YTU3MzgiLz48cGF0aCBkPSJNLTkwLDM4NEwtNTEsNzM4TC02MCw1ODBaIiBmaWxsPSIjZGM4MDdlIiBzdHJva2U9IiNkYzgwN2UiLz48cGF0aCBkPSJNLTkwLDM4NEwtNjAsNTgwTDM3LDUzM1oiIGZpbGw9IiNmYTk2OGEiIHN0cm9rZT0iI2ZhOTY4YSIvPjxwYXRoIGQ9Ik0tOTAsMzg0TDM3LDUzM0w3OCw0NTBaIiBmaWxsPSIjZmZhNDkyIiBzdHJva2U9IiNmZmE0OTIiLz48cGF0aCBkPSJNNzgsNDUwTDM3LDUzM0wxNzQsNTUyWiIgZmlsbD0iI2Y0OGM3OSIgc3Ryb2tlPSIjZjQ4Yzc5Ii8+PHBhdGggZD0iTTc4LDQ1MEwxNzQsNTUyTDE4NCw0NjNaIiBmaWxsPSIjZmY5Mjc5IiBzdHJva2U9IiNmZjkyNzkiLz48cGF0aCBkPSJNMTg0LDQ2M0wxNzQsNTUyTDMxNyw1MzhaIiBmaWxsPSIjZjI4MzY5IiBzdHJva2U9IiNmMjgzNjkiLz48cGF0aCBkPSJNMTg0LDQ2M0wzMTcsNTM4TDMxNiwzOTZaIiBmaWxsPSIjZmU5MzcxIiBzdHJva2U9IiNmZTkzNzEiLz48cGF0aCBkPSJNMzE2LDM5NkwzMTcsNTM4TDQ1Miw0NDlaIiBmaWxsPSIjZmU4ZjY4IiBzdHJva2U9IiNmZThmNjgiLz48cGF0aCBkPSJNNDUyLDQ0OUwzMTcsNTM4TDM4OCw1NTZaIiBmaWxsPSIjZjM3YTU4IiBzdHJva2U9IiNmMzdhNTgiLz48cGF0aCBkPSJNNDUyLDQ0OUwzODgsNTU2TDUyOCw1MjFaIiBmaWxsPSIjZjU3NzU0IiBzdHJva2U9IiNmNTc3NTQiLz48cGF0aCBkPSJNNDUyLDQ0OUw1MjgsNTIxTDUzNiw0MTVaIiBmaWxsPSIjZmU4NTVkIiBzdHJva2U9IiNmZTg1NWQiLz48cGF0aCBkPSJNNTM2LDQxNUw1MjgsNTIxTDY0Myw1MTNaIiBmaWxsPSIjZmU3NDRlIiBzdHJva2U9IiNmZTc0NGUiLz48cGF0aCBkPSJNNTM2LDQxNUw2NDMsNTEzTDY4NiwzOTlaIiBmaWxsPSIjZmU3YzU0IiBzdHJva2U9IiNmZTdjNTQiLz48cGF0aCBkPSJNNjg2LDM5OUw2NDMsNTEzTDczNiw1NjRaIiBmaWxsPSIjZmM2MDNlIiBzdHJva2U9IiNmYzYwM2UiLz48cGF0aCBkPSJNNjg2LDM5OUw3MzYsNTY0TDc4MCwzODhaIiBmaWxsPSIjZmI2YjQ4IiBzdHJva2U9IiNmYjZiNDgiLz48cGF0aCBkPSJNNzgwLDM4OEw3MzYsNTY0TDg3MSw0MDBaIiBmaWxsPSIjZjk2MzQ1IiBzdHJva2U9IiNmOTYzNDUiLz48cGF0aCBkPSJNODcxLDQwMEw3MzYsNTY0TDkxNSw1MjVaIiBmaWxsPSIjZjQ0ZDM1IiBzdHJva2U9IiNmNDRkMzUiLz48cGF0aCBkPSJNODcxLDQwMEw5MTUsNTI1TDEwMTQsMzk1WiIgZmlsbD0iI2YxNTQzYSIgc3Ryb2tlPSIjZjE1NDNhIi8+PHBhdGggZD0iTTEwMTQsMzk1TDkxNSw1MjVMOTg1LDU0MloiIGZpbGw9IiNlZTNjMjgiIHN0cm9rZT0iI2VlM2MyOCIvPjxwYXRoIGQ9Ik0xMDE0LDM5NUw5ODUsNTQyTDExMjYsNDQwWiIgZmlsbD0iI2U2M2MyOSIgc3Ryb2tlPSIjZTYzYzI5Ii8+PHBhdGggZD0iTTExMjYsNDQwTDk4NSw1NDJMMTExNyw1MzFaIiBmaWxsPSIjZDgyNjE5IiBzdHJva2U9IiNkODI2MTkiLz48cGF0aCBkPSJNMTEyNiw0NDBMMTExNyw1MzFMMTI3Nyw1NDhaIiBmaWxsPSIjYzYxNzBmIiBzdHJva2U9IiNjNjE3MGYiLz48cGF0aCBkPSJNMTEyNiw0NDBMMTI3Nyw1NDhMMTI5Niw0NjJaIiBmaWxsPSIjYzMxZjE0IiBzdHJva2U9IiNjMzFmMTQiLz48cGF0aCBkPSJNMTI5Niw0NjJMMTI3Nyw1NDhMMTM0MCw1NDdaIiBmaWxsPSIjYTcxMjBjIiBzdHJva2U9IiNhNzEyMGMiLz48cGF0aCBkPSJNMTI5Niw0NjJMMTM0MCw1NDdMMTM0OSwzOTlaIiBmaWxsPSIjYjEyNDE4IiBzdHJva2U9IiNiMTI0MTgiLz48cGF0aCBkPSJNMTM0OSwzOTlMMTM0MCw1NDdMMTUxMiw1NTNaIiBmaWxsPSIjOWYxOTEwIiBzdHJva2U9IiM5ZjE5MTAiLz48cGF0aCBkPSJNMTM0OSwzOTlMMTUxMiw1NTNMMTUxOSw0MTBaIiBmaWxsPSIjOTkyYTFkIiBzdHJva2U9IiM5OTJhMWQiLz48cGF0aCBkPSJNMTUxOSw0MTBMMTUxMiw1NTNMMTUyOCw3NDZaIiBmaWxsPSIjNjkwMDAwIiBzdHJva2U9IiM2OTAwMDAiLz48cGF0aCBkPSJNLTYwLDU4MEwtNTEsNzM4TC0xNyw2MzlaIiBmaWxsPSIjYjY3ZTdiIiBzdHJva2U9IiNiNjdlN2IiLz48cGF0aCBkPSJNLTYwLDU4MEwtMTcsNjM5TDM3LDUzM1oiIGZpbGw9IiNkNDdjNzgiIHN0cm9rZT0iI2Q0N2M3OCIvPjxwYXRoIGQ9Ik0zNyw1MzNMLTE3LDYzOUw1NCw2MjNaIiBmaWxsPSIjY2U3Yjc0IiBzdHJva2U9IiNjZTdiNzQiLz48cGF0aCBkPSJNMzcsNTMzTDU0LDYyM0wxNzQsNTUyWiIgZmlsbD0iI2RhNzg2ZCIgc3Ryb2tlPSIjZGE3ODZkIi8+PHBhdGggZD0iTTE3NCw1NTJMNTQsNjIzTDE4MSw2MzFaIiBmaWxsPSIjY2M3NjY4IiBzdHJva2U9IiNjYzc2NjgiLz48cGF0aCBkPSJNMTc0LDU1MkwxODEsNjMxTDMxNyw1MzhaIiBmaWxsPSIjZDg3MTVkIiBzdHJva2U9IiNkODcxNWQiLz48cGF0aCBkPSJNMzE3LDUzOEwxODEsNjMxTDMyNSw3MDRaIiBmaWxsPSIjYzE2ZTU3IiBzdHJva2U9IiNjMTZlNTciLz48cGF0aCBkPSJNMzE3LDUzOEwzMjUsNzA0TDQxMiw2NDBaIiBmaWxsPSIjYzA2OTRlIiBzdHJva2U9IiNjMDY5NGUiLz48cGF0aCBkPSJNMzE3LDUzOEw0MTIsNjQwTDM4OCw1NTZaIiBmaWxsPSIjZDY2ODRkIiBzdHJva2U9IiNkNjY4NGQiLz48cGF0aCBkPSJNMzg4LDU1Nkw0MTIsNjQwTDUyOCw1MjFaIiBmaWxsPSIjZDk2MjQ3IiBzdHJva2U9IiNkOTYyNDciLz48cGF0aCBkPSJNNTI4LDUyMUw0MTIsNjQwTDUxMiw2OTdaIiBmaWxsPSIjYzM1ZjQ0IiBzdHJva2U9IiNjMzVmNDQiLz48cGF0aCBkPSJNNTI4LDUyMUw1MTIsNjk3TDY3Myw2MzBaIiBmaWxsPSIjYzU1NTNhIiBzdHJva2U9IiNjNTU1M2EiLz48cGF0aCBkPSJNNTI4LDUyMUw2NzMsNjMwTDY0Myw1MTNaIiBmaWxsPSIjZTA1NDM4IiBzdHJva2U9IiNlMDU0MzgiLz48cGF0aCBkPSJNNjQzLDUxM0w2NzMsNjMwTDczNiw1NjRaIiBmaWxsPSIjZDk0NjJjIiBzdHJva2U9IiNkOTQ2MmMiLz48cGF0aCBkPSJNNzM2LDU2NEw2NzMsNjMwTDgyMCw2NjBaIiBmaWxsPSIjYzEzZjI5IiBzdHJva2U9IiNjMTNmMjkiLz48cGF0aCBkPSJNNzM2LDU2NEw4MjAsNjYwTDkxNSw1MjVaIiBmaWxsPSIjY2UzNTI1IiBzdHJva2U9IiNjZTM1MjUiLz48cGF0aCBkPSJNOTE1LDUyNUw4MjAsNjYwTDg4MSw2OThaIiBmaWxsPSIjYjcyZTIxIiBzdHJva2U9IiNiNzJlMjEiLz48cGF0aCBkPSJNOTE1LDUyNUw4ODEsNjk4TDk4NSw1NDJaIiBmaWxsPSIjYzQyNjFhIiBzdHJva2U9IiNjNDI2MWEiLz48cGF0aCBkPSJNOTg1LDU0Mkw4ODEsNjk4TDEwMjcsNjg0WiIgZmlsbD0iI2FhMjAxNiIgc3Ryb2tlPSIjYWEyMDE2Ii8+PHBhdGggZD0iTTk4NSw1NDJMMTAyNyw2ODRMMTExNyw1MzFaIiBmaWxsPSIjYmExNDBkIiBzdHJva2U9IiNiYTE0MGQiLz48cGF0aCBkPSJNMTExNyw1MzFMMTAyNyw2ODRMMTE4NCw2OTdaIiBmaWxsPSIjOTYwYTA3IiBzdHJva2U9IiM5NjBhMDciLz48cGF0aCBkPSJNMTExNyw1MzFMMTE4NCw2OTdMMTIyMCw2NjlaIiBmaWxsPSIjOGQwMTAxIiBzdHJva2U9IiM4ZDAxMDEiLz48cGF0aCBkPSJNMTExNyw1MzFMMTIyMCw2NjlMMTI3Nyw1NDhaIiBmaWxsPSIjOWQwMDAwIiBzdHJva2U9IiM5ZDAwMDAiLz48cGF0aCBkPSJNMTI3Nyw1NDhMMTIyMCw2NjlMMTM0NCw2MzFaIiBmaWxsPSIjODAwMDAwIiBzdHJva2U9IiM4MDAwMDAiLz48cGF0aCBkPSJNMTI3Nyw1NDhMMTM0NCw2MzFMMTM0MCw1NDdaIiBmaWxsPSIjOGMwMDAwIiBzdHJva2U9IiM4YzAwMDAiLz48cGF0aCBkPSJNMTM0MCw1NDdMMTM0NCw2MzFMMTUxMiw1NTNaIiBmaWxsPSIjN2MwMDAwIiBzdHJva2U9IiM3YzAwMDAiLz48cGF0aCBkPSJNMTUxMiw1NTNMMTM0NCw2MzFMMTQ3Miw2NzdaIiBmaWxsPSIjNjEwMDAwIiBzdHJva2U9IiM2MTAwMDAiLz48cGF0aCBkPSJNMTUxMiw1NTNMMTQ3Miw2NzdMMTUyOCw3NDZaIiBmaWxsPSIjNDQwMDAwIiBzdHJva2U9IiM0NDAwMDAiLz48cGF0aCBkPSJNLTE3LDYzOUwtNTEsNzM4TDk3LDc1NloiIGZpbGw9IiM5YjdiNzUiIHN0cm9rZT0iIzliN2I3NSIvPjxwYXRoIGQ9Ik0tMTcsNjM5TDk3LDc1Nkw1NCw2MjNaIiBmaWxsPSIjYWQ3YTcxIiBzdHJva2U9IiNhZDdhNzEiLz48cGF0aCBkPSJNNTQsNjIzTDk3LDc1NkwxODEsNjMxWiIgZmlsbD0iI2FkNzc2YSIgc3Ryb2tlPSIjYWQ3NzZhIi8+PHBhdGggZD0iTTE4MSw2MzFMOTcsNzU2TDE0OCw4MDBaIiBmaWxsPSIjOTM3NTY3IiBzdHJva2U9IiM5Mzc1NjciLz48cGF0aCBkPSJNMTgxLDYzMUwxNDgsODAwTDMyNSw3MDRaIiBmaWxsPSIjOWI3MTVlIiBzdHJva2U9IiM5YjcxNWUiLz48cGF0aCBkPSJNMzI1LDcwNEwxNDgsODAwTDMzNiw4MTlaIiBmaWxsPSIjN2Y2ZTU4IiBzdHJva2U9IiM3ZjZlNTgiLz48cGF0aCBkPSJNMzI1LDcwNEwzMzYsODE5TDQwMCw3ODFaIiBmaWxsPSIjODE2OTRlIiBzdHJva2U9IiM4MTY5NGUiLz48cGF0aCBkPSJNMzI1LDcwNEw0MDAsNzgxTDQxMiw2NDBaIiBmaWxsPSIjOWM2NzRjIiBzdHJva2U9IiM5YzY3NGMiLz48cGF0aCBkPSJNNDEyLDY0MEw0MDAsNzgxTDUxMiw2OTdaIiBmaWxsPSIjOWQ2MzQ3IiBzdHJva2U9IiM5ZDYzNDciLz48cGF0aCBkPSJNNTEyLDY5N0w0MDAsNzgxTDU0Niw3OTNaIiBmaWxsPSIjODY1ZjQ0IiBzdHJva2U9IiM4NjVmNDQiLz48cGF0aCBkPSJNNTEyLDY5N0w1NDYsNzkzTDYyNyw3NThaIiBmaWxsPSIjODk1NjNiIiBzdHJva2U9IiM4OTU2M2IiLz48cGF0aCBkPSJNNTEyLDY5N0w2MjcsNzU4TDY3Myw2MzBaIiBmaWxsPSIjYTE1MDM2IiBzdHJva2U9IiNhMTUwMzYiLz48cGF0aCBkPSJNNjczLDYzMEw2MjcsNzU4TDc2NSw3ODRaIiBmaWxsPSIjOTQ0NTJjIiBzdHJva2U9IiM5NDQ1MmMiLz48cGF0aCBkPSJNNjczLDYzMEw3NjUsNzg0TDgyMCw2NjBaIiBmaWxsPSIjYTAzZDI5IiBzdHJva2U9IiNhMDNkMjkiLz48cGF0aCBkPSJNODIwLDY2MEw3NjUsNzg0TDg4MSw2OThaIiBmaWxsPSIjOTMzNTI1IiBzdHJva2U9IiM5MzM1MjUiLz48cGF0aCBkPSJNODgxLDY5OEw3NjUsNzg0TDg3MSw3OTRaIiBmaWxsPSIjN2UzMzI0IiBzdHJva2U9IiM3ZTMzMjQiLz48cGF0aCBkPSJNODgxLDY5OEw4NzEsNzk0TDEwMjcsNjg0WiIgZmlsbD0iIzg3MjYxYSIgc3Ryb2tlPSIjODcyNjFhIi8+PHBhdGggZD0iTTEwMjcsNjg0TDg3MSw3OTRMMTA1Nyw3NDNaIiBmaWxsPSIjN2MxYzEzIiBzdHJva2U9IiM3YzFjMTMiLz48cGF0aCBkPSJNMTAyNyw2ODRMMTA1Nyw3NDNMMTE4NCw2OTdaIiBmaWxsPSIjN2EwZDA5IiBzdHJva2U9IiM3YTBkMDkiLz48cGF0aCBkPSJNMTE4NCw2OTdMMTA1Nyw3NDNMMTE1NSw3NjFaIiBmaWxsPSIjNjcwNzA1IiBzdHJva2U9IiM2NzA3MDUiLz48cGF0aCBkPSJNMTE4NCw2OTdMMTE1NSw3NjFMMTI2OCw3NjRaIiBmaWxsPSIjNTcwMDAwIiBzdHJva2U9IiM1NzAwMDAiLz48cGF0aCBkPSJNMTE4NCw2OTdMMTI2OCw3NjRMMTIyMCw2NjlaIiBmaWxsPSIjNjEwMDAwIiBzdHJva2U9IiM2MTAwMDAiLz48cGF0aCBkPSJNMTIyMCw2NjlMMTI2OCw3NjRMMTM0NCw2MzFaIiBmaWxsPSIjNjEwMDAwIiBzdHJva2U9IiM2MTAwMDAiLz48cGF0aCBkPSJNMTM0NCw2MzFMMTI2OCw3NjRMMTM3Myw3NjdaIiBmaWxsPSIjNDkwMDAwIiBzdHJva2U9IiM0OTAwMDAiLz48cGF0aCBkPSJNMTM0NCw2MzFMMTM3Myw3NjdMMTQ3Miw2NzdaIiBmaWxsPSIjNGEwMDAwIiBzdHJva2U9IiM0YTAwMDAiLz48cGF0aCBkPSJNMTQ3Miw2NzdMMTM3Myw3NjdMMTUyOCw3NDZaIiBmaWxsPSIjMmQwMDAwIiBzdHJva2U9IiMyZDAwMDAiLz48cGF0aCBkPSJNLTUxLDczOEwxNDgsODAwTDk3LDc1NloiIGZpbGw9IiM4Mzc5NmYiIHN0cm9rZT0iIzgzNzk2ZiIvPjxwYXRoIGQ9Ik0zMzYsODE5TDg3MSw3OTRMNTQ2LDc5M1oiIGZpbGw9IiM3ZjUzMzgiIHN0cm9rZT0iIzdmNTMzOCIvPjxwYXRoIGQ9Ik0zMzYsODE5TDU0Niw3OTNMNDAwLDc4MVoiIGZpbGw9IiM3ZjY0NDgiIHN0cm9rZT0iIzdmNjQ0OCIvPjxwYXRoIGQ9Ik01NDYsNzkzTDg3MSw3OTRMNzY1LDc4NFoiIGZpbGw9IiM3YzQwMmEiIHN0cm9rZT0iIzdjNDAyYSIvPjxwYXRoIGQ9Ik01NDYsNzkzTDc2NSw3ODRMNjI3LDc1OFoiIGZpbGw9IiM3ZTRiMzAiIHN0cm9rZT0iIzdlNGIzMCIvPjxwYXRoIGQ9Ik04NzEsNzk0TDEzNzMsNzY3TDEyNjgsNzY0WiIgZmlsbD0iIzRmMDIwMSIgc3Ryb2tlPSIjNGYwMjAxIi8+PHBhdGggZD0iTTg3MSw3OTRMMTI2OCw3NjRMMTE1NSw3NjFaIiBmaWxsPSIjNWMwYzA4IiBzdHJva2U9IiM1YzBjMDgiLz48cGF0aCBkPSJNODcxLDc5NEwxMTU1LDc2MUwxMDU3LDc0M1oiIGZpbGw9IiM2YzE2MGUiIHN0cm9rZT0iIzZjMTYwZSIvPjwvZz48L3N2Zz4=);
+                background-size: 100%;
+                margin-bottom: 0px;
+                color: #444;
+            }
+            .monospaced {
+                font-family: 'Inconsolata';
+                font-size: 14px;
+            }
+            select, input {
+                width: 100%;
+            }
+            textarea {
+                width: 100%;
+                height: 100px;
+                padding-right: 50px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Capstone.js</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#">Download</a></li>
+                        <li><a href="https://github.com/AlexAltea/capstone.js">Github</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="jumbotron">
+            <div class="container">
+                <h1>Capstone.js</h1>
+                <p>The Capstone disassembler framework, now available for JavaScript.</p>
+                <p>
+                    <a class="btn btn-primary btn-lg" href="#" role="button">Download &raquo;</a>
+                    <a class="btn btn-primary btn-lg" href="https://github.com/AlexAltea/capstone.js" role="button">Github &raquo;</a>
+                    <a class="btn btn-danger btn-lg" href="http://www.capstone-engine.org/" role="button">Capstone &raquo;</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="container">
+            
+            <h2>Demo</h2>
+            <div class="row" data-ng-controller="cjsController">
+                <div class="col-md-6">
+                    <h3>Machine code</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table>
+                                <tr>
+                                    <td style="padding: 5px 20px 5px 0px">
+                                        <b>Architecture</b>
+                                    </td>
+                                    <td>
+                                        <select ng-model="architecture">
+                                            <option value="0">ARM</option>
+                                            <option value="1">ARM64</option>
+                                            <option value="2">MIPS</option>
+                                            <option value="3">x86</option>
+                                            <option value="4">PowerPC</option>
+                                            <option value="5">SPARC</option>
+                                            <option value="6">SystemZ</option>
+                                            <option value="7">XCore</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px 20px 5px 0px">
+                                        <b>Endianness:</b>
+                                    </td>
+                                    <td>
+                                        <select ng-model="endianness">
+                                            <option value="0">Little-Endian</option>
+                                            <option value="-2147483648">Big-Endian</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px 20px 5px 0px">
+                                        <b>Mode:</b>
+                                    </td>
+                                    <td>
+                                        <select ng-model="mode">
+                                            <option value="2">16-bit</option>
+                                            <option value="4">32-bit</option>
+                                            <option value="8">64-bit</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px 20px 5px 0px">
+                                        <b>Offset:</b>
+                                    </td>
+                                    <td>
+                                        <input type="text" ng-model="offset" placeholder="(decimal)" style="padding-left:3px" maxlength="8" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6" style="padding: 3px 50px 3px 3px">
+                            <textarea ng-model="buffer"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h3>Disassembly</h3>
+                    <table>
+                        <tr>
+                            <th style="padding-right: 20px">Addr.</th>
+                            <th style="padding-right: 20px">Bytes</th>
+                            <th style="padding-right: 20px">Instr.</th>
+                            <th>Operands</th>
+                        </tr>
+                        <tr class="monospaced" data-ng-repeat="instr in instructions">
+                            <td style="padding-right: 20px">{{ instr.address | hexadecimal }}</td>
+                            <td style="padding-right: 20px">
+                                <span ng-repeat="byte in instr.bytes track by $index">
+                                    {{ byte | hexadecimal:2 }}
+                                </span>
+                            </td>
+                            <td style="padding-right: 20px">{{ instr.mnemonic }}</td>
+                            <td>{{ instr.op_str }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <hr />
+
+            <h2>Installation</h2>
+            <p>Coming soon... </p>
+
+            <h2>Tutorial</h2>
+            <p>Coming soon... </p>
+
+            <hr />
+
+            <footer class="container">
+                <p style="color: #666; font-weight: 300">&copy; Capstone.JS 2014. Wrapper made by Alexandro S&aacute;nchez Bach.</p>
+                <p style="color: #666; font-weight: 300">
+                    Capstone.JS uses on the Capstone framework, originally developed by Nguyen Anh Quynh.<br/>
+                    Check the repository for license details.
+                </p>
+            </footer>
+        </div>
+
+        <!-- External scripts -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.js"></script>
+        <script src="dist/capstone.min.js"></script>
+
+        <!-- Simple demo of CapstoneJS -->
+        <script>
+            // Capstone global object
+            var cs = new capstone.Capstone(capstone.ARCH_X86, capstone.MODE_64);
+
+            function capstoneConfigure(arch, mode) {
+                cs.delete();
+                cs = new capstone.Capstone(arch, mode);
+            }
+
+            function capstoneRender($scope) {
+                var trimmedBuffer = $scope.buffer.replace(/[^a-fA-F0-9]/g, '');
+                if (trimmedBuffer.length % 2 == 0) {
+                    var csBuffer = [];
+                    for (var i = 0; i < trimmedBuffer.length; i += 2) {
+                        csBuffer.push(parseInt(trimmedBuffer.substr(i, 2), 16));
+                    }
+                    $scope.instructions = cs.disasm(csBuffer, $scope.offset);
+                }
+            }
+
+            // AngularJS
+            var cjs = angular.module('CapstoneJS', []);
+
+            // Controllers
+            cjs.controller('cjsController', ['$scope', function ($scope) {
+                $scope.$watch('architecture', function () {
+                    capstoneConfigure($scope.architecture, $scope.endianness | $scope.mode);
+                    capstoneRender($scope);
+                });
+                $scope.$watch('endianness', function () {
+                    capstoneConfigure($scope.architecture, $scope.endianness | $scope.mode);
+                    capstoneRender($scope);
+                });
+                $scope.$watch('mode', function () {
+                    capstoneConfigure($scope.architecture, $scope.endianness | $scope.mode);
+                    capstoneRender($scope);
+                });
+                $scope.$watch('buffer', function () {
+                    capstoneRender($scope);
+                });
+                $scope.$watch('offset', function () {
+                    capstoneRender($scope);
+                });
+
+                $scope.architecture = capstone.ARCH_X86;
+                $scope.endianness = capstone.MODE_LITTLE_ENDIAN;
+                $scope.mode = capstone.MODE_64;
+                $scope.offset = 0x10000;
+                $scope.buffer = "55 31 D2 89 E5 8B 45 08";
+            }]);
+
+            // Filters
+            cjs.filter('hexadecimal', function () {
+                return function (value, length) {
+                    var length = length || 8;
+                    var str = '0000000000000000' + value.toString(16).toUpperCase();
+                    return str.slice(-length);
+                };
+            });
+        </script>
+    </body>
+</html>
