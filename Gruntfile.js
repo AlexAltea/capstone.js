@@ -12,7 +12,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         exec: {
             emscripten: {
-                command: 'emcc -o src/capstone.out.js capstone/main.c'
+                command: 'python build.py'
             }
         },
         uglify: {

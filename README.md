@@ -9,7 +9,7 @@ Port of the [Capstone](https://github.com/aquynh/capstone) disassembler framewor
 ### Deploy
 To build the Capstone.js framework, clone the *master* branch of this repository, and do the following:
 
-**1.** Initialize Git submodules to fetch the original Capstone repository with: `git submodule update --init`
+**1.** Initialize Git submodules to fetch the original Capstone repository: `git submodule update --init`.
 
 **2.** Install the development and client dependencies with: `npm install` and `bower install`.
 
