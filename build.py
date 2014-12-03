@@ -16,7 +16,6 @@ EXPORTED_FUNCTIONS = [
 ]
 
 def compileCapstone():
-	
 	# CMake
 	cmd = 'cmake'
 	cmd += os.path.expandvars(' -DCMAKE_TOOLCHAIN_FILE=$EMSCRIPTEN/cmake/Modules/Platform/Emscripten.cmake')
@@ -41,6 +40,7 @@ def compileCapstone():
 
 	# Compile static library to JavaScript
 	cmd = os.path.expandvars('$EMSCRIPTEN/emcc')
+	cmd += ' -O1'
 	cmd += ' capstone/libcapstone.a'
 	cmd += ' -s EXPORTED_FUNCTIONS=\"[\''+ '\', \''.join(EXPORTED_FUNCTIONS) +'\']\"'
 	cmd += ' -o src/capstone.out.js'
@@ -48,7 +48,6 @@ def compileCapstone():
 
 
 if __name__ == "__main__":
-	
 	if os.name in ['nt', 'posix']:
 		compileCapstone()		
 	else:

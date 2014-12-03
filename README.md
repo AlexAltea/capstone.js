@@ -13,6 +13,6 @@ To build the Capstone.js framework, clone the *master* branch of this repository
 
 2. Install the development and client dependencies with: `npm install` and `bower install`.
 
-3. Install the lastest [Python 2.x (64-bit)](https://www.python.org/downloads/), [CMake](http://www.cmake.org/download/) and the [Emscripten SDK](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html). Follow the respective instructions and make sure all environment variables are configured correctly. The command `emcc` should launch the Emscripten C compiler. Under Windows [MinGW](http://www.mingw.org/) (specifically *mingw32-make*) is required.
+3. Install the lastest [Python 2.x (64-bit)](https://www.python.org/downloads/), [CMake](http://www.cmake.org/download/) and the [Emscripten SDK](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html). Follow the respective instructions and make sure all environment variables are configured correctly. Under Windows [MinGW](http://www.mingw.org/) (specifically *mingw32-make*) is required.
 
 4. Finally, build the source with: `grunt build`.
