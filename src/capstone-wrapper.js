@@ -1,9 +1,9 @@
 /**
- * Capstone.js
+ * (c) 2014 Capstone.JS
+ * Wrapper made my Alexandro Sanchez Bach.
  */
 
 var capstone = {
-
     // Return codes
     ERR_OK: 0,         // No error: everything was fine
     ERR_MEM: 1,        // Out-Of-Memory error: cs_open(), cs_disasm(), cs_disasm_iter()
@@ -65,8 +65,12 @@ var capstone = {
 
         // Machine bytes of this instruction (length indicated by @size above)
         this.bytes = [];
-        for (var i = 0; i < 16; i++) {
-            this.bytes.push(Module.getValue(pointer + 18 + i, 'i8'));
+        for (var i = 0; i < this.size; i++) {
+            var byteValue = Module.getValue(pointer + 18 + i, 'i8');
+            if (byteValue < 0) {
+                byteValue = 256 + byteValue;
+            }
+            this.bytes.push(byteValue);
         }
 
         // ASCII representation of instruction mnemonic
@@ -79,23 +83,23 @@ var capstone = {
     /**
      * Capstone object
      */
-    Capstone: function (arch, mode) {
+    Cs: function (arch, mode) {
         this.arch = arch;
         this.mode = mode;
-        this.$handle = Module._malloc(4);
+        this.handle_ptr = Module._malloc(4);
 
         // Destructor
         this.delete = function () {
-            Module._free(this.$handle);
+            Module._free(this.handle_ptr);
         }
 
+        // Disassemble
         this.disasm = function (buffer, addr, max) {
-
-            var handle = Module.getValue(this.$handle, 'i32');
+            var handle = Module.getValue(this.handle_ptr, 'i32');
 
             // Allocate buffer and copy data
             var buffer_ptr = Module._malloc(buffer.length);
-            var buffer_heap = new Uint8Array(Module.HEAPU8.buffer, buffer_ptr, 8);
+            var buffer_heap = new Uint8Array(Module.HEAPU8.buffer, buffer_ptr, buffer.length);
             buffer_heap.set(new Uint8Array(buffer));
 
             // Pointer to the instruction array
@@ -109,25 +113,29 @@ var capstone = {
             // Dereference intruction array
             var insn_ptr = Module.getValue(insn_ptr_ptr, 'i32');
             var insn_size = 232;
-
-            // Save instructions
             var instructions = [];
+            
+            // Save instructions
             for (var i = 0; i < count; i++) {
                 instructions.push(new capstone.Instruction(insn_ptr + i * insn_size));
             }
-
-            Module._free(insn_ptr_ptr);
+			
+			var count = Module.ccall('cs_free', 'void',
+                ['pointer', 'number'],
+                [insn_ptr, count]
+            );
+			
+			Module._free(insn_ptr_ptr);
             Module._free(buffer_ptr);
             return instructions;
         };
 
-        // Create Capstone object
+        // Constructor
         var ret = Module.ccall('cs_open', 'number',
             ['number', 'number', 'pointer'],
-            [this.arch, this.mode, this.$handle]
+            [this.arch, this.mode, this.handle_ptr]
         );
 
-        // Check return code
         if (ret != capstone.ERR_OK) {
             console.error('Capstone.js: Function cs_open failed with code %d.', ret);
         }

@@ -17,6 +17,9 @@ module.exports = function (grunt) {
         },
         uglify: {
             dist: {
+                options: {
+                    compress: true,
+                },
                 files: {
                     'dist/capstone.min.js': [
                         'src/**/*.js'
@@ -28,8 +31,7 @@ module.exports = function (grunt) {
             options: {
                 port: 9001,
                 livereload: 35729,
-                hostname: 'localhost',
-                base: 'dist'
+                hostname: 'localhost'
             },
             livereload: {
                 options: {
@@ -38,15 +40,10 @@ module.exports = function (grunt) {
             }
         },
         watch: {
-            scripts: {
-                files: 'src/**/*.ts',
-                tasks: ['typescript']
-            },
             livereload: {
                 files: [
-                    'dist/**/*.html',
-                    'dist/*.js',
-                    'dist/*.css'
+                    'index.html',
+                    'dist/*.js'
                 ],
                 options: {
                     livereload: '<%= connect.options.livereload %>'
@@ -62,6 +59,10 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'exec:emscripten',
         'uglify'
+    ]);
+    grunt.registerTask('serve', [
+        'connect',
+        'watch'
     ]);
     grunt.registerTask('default', [
         'test',

@@ -185,11 +185,11 @@
         <!-- Simple demo of CapstoneJS -->
         <script>
             // Capstone global object
-            var cs = new capstone.Capstone(capstone.ARCH_X86, capstone.MODE_64);
+            var cs = new capstone.Cs(capstone.ARCH_X86, capstone.MODE_64);
 
             function capstoneConfigure(arch, mode) {
                 cs.delete();
-                cs = new capstone.Capstone(arch, mode);
+                cs = new capstone.Cs(arch, mode);
             }
 
             function capstoneRender($scope) {

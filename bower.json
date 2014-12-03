@@ -1,6 +1,6 @@
 {
   "name": "capstone",
-  "version": "2.1.2",
+  "version": "3.0",
   "description": "Capstone disassembler framework port for JavaScript",
   "authors": [
     "Alexandro Sanchez Bach <alexaltea123@gmail.com>"
@@ -10,6 +10,5 @@
     "url": "https://github.com/AlexAltea/capstone.js.git"
   },
   "dependencies": {},
-  "devDependencies": {},
-  "private": true
+  "devDependencies": {}
 }
