@@ -114,18 +114,18 @@ var capstone = {
             var insn_ptr = Module.getValue(insn_ptr_ptr, 'i32');
             var insn_size = 232;
             var instructions = [];
-            
+
             // Save instructions
             for (var i = 0; i < count; i++) {
                 instructions.push(new capstone.Instruction(insn_ptr + i * insn_size));
             }
-			
-			var count = Module.ccall('cs_free', 'void',
+
+            var count = Module.ccall('cs_free', 'void',
                 ['pointer', 'number'],
                 [insn_ptr, count]
             );
-			
-			Module._free(insn_ptr_ptr);
+
+            Module._free(insn_ptr_ptr);
             Module._free(buffer_ptr);
             return instructions;
         };
