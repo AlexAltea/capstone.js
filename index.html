@@ -5,6 +5,7 @@
 
         <!-- External stylesheets -->
         <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css" rel="stylesheet">
 
         <!-- External fonts -->
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600' rel='stylesheet' type='text/css'>
@@ -48,11 +49,11 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Capstone.js</a>
+                    <a class="navbar-brand" href="http://alexaltea.github.io/capstone.js/">Capstone.js</a>
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="#">Download</a></li>
+                        <li><a href="http://alexaltea.github.io/capstone.js/dist/capstone.min.js">Download</a></li>
                         <li><a href="https://github.com/AlexAltea/capstone.js">Github</a></li>
                     </ul>
                 </div>
@@ -64,7 +65,7 @@
                 <h1>Capstone.js</h1>
                 <p>The Capstone disassembler framework, now available for JavaScript.</p>
                 <p>
-                    <a class="btn btn-primary btn-lg" href="#" role="button">Download &raquo;</a>
+                    <a class="btn btn-primary btn-lg" href="http://alexaltea.github.io/capstone.js/dist/capstone.min.js" role="button">Download &raquo;</a>
                     <a class="btn btn-primary btn-lg" href="https://github.com/AlexAltea/capstone.js" role="button">Github &raquo;</a>
                     <a class="btn btn-danger btn-lg" href="http://www.capstone-engine.org/" role="button">Capstone &raquo;</a>
                 </p>
@@ -74,6 +75,11 @@
         <div class="container">
             
             <h2>Demo</h2>
+            <p>
+                Before going to the Installation / Tutorial panels below, you might want to know how Capstone.js tastes like.
+                Here you have a simple demo, providing realtime client-side machine code disassembling thanks to Capstone.js and Angular.
+                The architecture/endianness/mode combination is not verified in this demonstration, thus leading to a JavaScript error if you choose them wrong (e.g. '<i>16-bit PowerPC</i>', '<i>Big-endian x86</i>', etc.)
+            </p>
             <div class="row" data-ng-controller="cjsController">
                 <div class="col-md-6">
                     <h3>Machine code</h3>
@@ -161,11 +167,45 @@
 
             <hr />
 
-            <h2>Installation</h2>
-            <p>Coming soon... </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>Information</h2>
+                    <p><b>Capstone.js</b> is a port of the <a href="http://www.capstone-engine.org/">Capstone</a> disassembler framework for JavaScript, done with <a href="https://github.com/kripken/emscripten">Emscripten</a>. It's released as a 6 MB JavaScript file supporting the architectures: <i>ARM</i>, <i>ARM64</i>, <i>MIPS</i>, <i>PowerPC</i>, <i>Sparc</i>, <i>SystemZ</i>, <i>XCore</i> and <i>x86</i>. Follow the <a>Readme</a> to compile a subset of these, with a size of 600 KB per platform.</p>
+                    <p>Capstone is a lightweight multi-architecture disassembly framework originally developed by Nguyen Anh Quynh, with support of other developers and released under BSD license. None of its source code has been altered for this port.</p>
 
-            <h2>Tutorial</h2>
-            <p>Coming soon... </p>
+                    <h2>Installation</h2>
+                    <p>To use the Capstone.js in your web application, download and include it with:</p>
+                    <p><pre><code>&lt;script src="capstone.min.js"&gt;&lt;/script&gt;</code></pre></p>
+                    <p>or install it through the Bower command:</p>
+                    <p><pre><code>bower install capstone</code></pre></p>
+                </div>
+                <div class="col-md-6">
+                    <h2>Tutorial</h2>
+                    <p>
+<pre><code class="javascript">// Input: Machine code bytes and offset where they are located
+var buffer = [0x55, 0x48, 0x8b, 0x05, 0xb8, 0x13, 0x00, 0x00];
+var offset = 0x1000;
+
+// Initialize the decoder
+var cs = new capstone.Cs(capstone.ARCH_X86, capstone.MODE_64);
+
+// Output: Array of capstone.Instruction objects
+var instructions = cs.disasm(buffer, offset);
+
+// Display results;
+instructions.forEach(function (instr) {
+    console.log("0x%s:\t%s\t%s",
+        instr.address.toString(16),
+        instr.mnemonic,
+        instr.op_str
+    );
+});
+
+// Delete decoder
+cs.delete();</code></pre>
+                    </p>
+                </div>
+            </div>
 
             <hr />
 
@@ -180,10 +220,15 @@
 
         <!-- External scripts -->
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/languages/javascript.min.js"></script>
         <script src="dist/capstone.min.js"></script>
 
         <!-- Simple demo of CapstoneJS -->
         <script>
+            // Highlight.JS
+            hljs.initHighlightingOnLoad();
+
             // Capstone global object
             var cs = new capstone.Cs(capstone.ARCH_X86, capstone.MODE_64);
 
