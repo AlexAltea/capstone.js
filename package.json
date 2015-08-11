@@ -1,6 +1,6 @@
 {
   "name": "capstone",
-  "version": "3.0",
+  "version": "3.0.0",
   "description": "Capstone disassembler framework port for JavaScript",
   "author": "Alexandro Sanchez Bach <alexaltea123@gmail.com>",
   "repository": {
@@ -15,10 +15,10 @@
     "grunt-contrib-uglify": "^0.6.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-exec": "~0.4.6",
-    "grunt-typescript": "^0.4.4",
+    "grunt-typescript": "~0.4.4",
     "load-grunt-tasks": "^1.0.0",
     "time-grunt": "^1.0.0",
-    "typescript": "^1.3.0"
+    "typescript": "~1.3.0"
   },
   "bugs": {
     "url": "https://github.com/AlexAltea/capstone.js/issues"
