@@ -1,6 +1,6 @@
 Capstone.js
 ===========
-[![Last Release](https://badge.fury.io/gh/AlexAltea%2Fcapstone.js.svg)](https://github.com/AlexAltea/capstone.js/releases)
+[![Last Release](https://img.shields.io/badge/version-3.0.4-brightgreen.svg?style=flat)](https://github.com/AlexAltea/capstone.js/releases)
 
 Port of the [Capstone](https://github.com/aquynh/capstone) disassembler framework for JavaScript. Powered by [Emscripten](https://github.com/kripken/emscripten).
 
