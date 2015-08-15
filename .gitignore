@@ -1,7 +1,3 @@
-# Visual Studio
-*.sln
-*.suo
-
 # Dependencies NodeJS
 node_modules/
 
