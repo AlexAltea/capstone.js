@@ -1,5 +1,5 @@
 {
-  "name": "capstone",
+  "name": "capstonejs",
   "version": "3.0.4",
   "description": "Capstone disassembler framework port for JavaScript",
   "homepage": "http://alexaltea.github.io/capstone.js/",

@@ -13,7 +13,7 @@ To install the Capstone.js install in your web application, include it with:
 ```
 or installer through the Bower command:
 ```
-bower install capstone
+bower install capstonejs
 ```
 
 ## Usage                                                      
@@ -44,7 +44,7 @@ cs.delete();
 ## Building
 To build the Capstone.js library, clone the *master* branch of this repository, and do the following:
 
-1. Initialize Git submodules to fetch the original Capstone repository: `git submodule update --init`.
+1. Initialize the original Capstone submodule: `git submodule update --init`.
 
 2. Install the development and client dependencies with: `npm install` and `bower install`.
 
