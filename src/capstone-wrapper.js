@@ -1,6 +1,6 @@
 /**
  * (c) 2014 Capstone.JS
- * Wrapper made my Alexandro Sanchez Bach.
+ * Wrapper made by Alexandro Sanchez Bach.
  */
 
 var capstone = {
