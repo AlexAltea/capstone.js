@@ -172,7 +172,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <h2>Information</h2>
-                    <p><b>Capstone.js</b> is a port of the <a href="http://www.capstone-engine.org/">Capstone</a> disassembler framework for JavaScript, done with <a href="https://github.com/kripken/emscripten">Emscripten</a>. It's released as a 6 MB JavaScript file supporting the architectures: <i>ARM</i>, <i>ARM64</i>, <i>MIPS</i>, <i>PowerPC</i>, <i>Sparc</i>, <i>SystemZ</i>, <i>XCore</i> and <i>x86</i>. Follow the <a href="https://github.com/AlexAltea/capstone.js/blob/master/README.md">Readme</a> to compile a subset of these, with a size of 600 KB per platform.</p>
+                    <p><b>Capstone.js</b> is a port of the <a href="http://www.capstone-engine.org/">Capstone</a> disassembler framework for JavaScript, done with <a href="https://github.com/kripken/emscripten">Emscripten</a>. It's released as a 5 MB JavaScript file supporting the architectures: <i>ARM</i>, <i>ARM64</i>, <i>MIPS</i>, <i>PowerPC</i>, <i>Sparc</i>, <i>SystemZ</i>, <i>XCore</i> and <i>x86</i>. Follow the <a href="https://github.com/AlexAltea/capstone.js/blob/master/README.md">Readme</a> to compile a subset of these, with a size of 500 KB per platform.</p>
                     <p>Capstone is a lightweight multi-architecture disassembly framework originally developed by Nguyen Anh Quynh, with support of other developers and released under BSD license. None of its source code has been altered for this port.</p>
 
                     <h2>Installation</h2>
@@ -191,7 +191,7 @@ var offset = 0x10000;
 // Initialize the decoder
 var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_64);
 
-// Output: Array of capstone.Instruction objects
+// Output: Array of cs.Instruction objects
 var instructions = d.disasm(buffer, offset);
 
 // Display results;
@@ -212,7 +212,7 @@ d.delete();</code></pre>
             <hr />
 
             <footer class="container">
-                <p style="color: #666; font-weight: 300">&copy; Capstone.JS 2014. Wrapper made by Alexandro S&aacute;nchez Bach.</p>
+                <p style="color: #666; font-weight: 300">&copy; Capstone.JS 2014-2017. Wrapper made by Alexandro S&aacute;nchez Bach.</p>
                 <p style="color: #666; font-weight: 300">
                     Capstone.JS uses on the Capstone framework, originally developed by Nguyen Anh Quynh.<br/>
                     Check the repository for license details.
@@ -234,7 +234,7 @@ d.delete();</code></pre>
             hljs.initHighlightingOnLoad();
 
             // Capstone global object
-            var d = new cs.Capstone(capstone.ARCH_X86, capstone.MODE_64);
+            var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_64);
 
             function capstoneConfigure(arch, mode) {
                 d.delete();
@@ -276,9 +276,9 @@ d.delete();</code></pre>
                     capstoneRender($scope);
                 });
 
-                $scope.architecture = capstone.ARCH_X86;
-                $scope.endianness = capstone.MODE_LITTLE_ENDIAN;
-                $scope.mode = capstone.MODE_64;
+                $scope.architecture = cs.ARCH_X86;
+                $scope.endianness = cs.MODE_LITTLE_ENDIAN;
+                $scope.mode = cs.MODE_64;
                 $scope.offset = 0x10000;
                 $scope.buffer = "55 31 D2 89 E5 8B 45 08";
             }]);

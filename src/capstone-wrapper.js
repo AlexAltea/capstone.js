@@ -58,18 +58,18 @@ var cs = {
      */
     Instruction: function (pointer) {
         // Instruction ID
-        this.id = Module.getValue(pointer, 'i32');
+        this.id = MCapstone.getValue(pointer, 'i32');
 
         // Address (EIP) of this instruction
-        this.address = Module.getValue(pointer + 8, 'i64');
+        this.address = MCapstone.getValue(pointer + 8, 'i64');
 
         // Size of this instruction
-        this.size = Module.getValue(pointer + 16, 'i16');
+        this.size = MCapstone.getValue(pointer + 16, 'i16');
 
         // Machine bytes of this instruction (length indicated by @size above)
         this.bytes = [];
         for (var i = 0; i < this.size; i++) {
-            var byteValue = Module.getValue(pointer + 18 + i, 'i8');
+            var byteValue = MCapstone.getValue(pointer + 18 + i, 'i8');
             if (byteValue < 0) {
                 byteValue = 256 + byteValue;
             }
@@ -77,10 +77,10 @@ var cs = {
         }
 
         // ASCII representation of instruction mnemonic
-        this.mnemonic = Pointer_stringify(pointer + 34);
+        this.mnemonic = MCapstone.Pointer_stringify(pointer + 34);
 
         // ASCII representation of instruction operands
-        this.op_str = Pointer_stringify(pointer + 66);
+        this.op_str = MCapstone.Pointer_stringify(pointer + 66);
     },
 
     /**
@@ -89,32 +89,32 @@ var cs = {
     Capstone: function (arch, mode) {
         this.arch = arch;
         this.mode = mode;
-        this.handle_ptr = Module._malloc(4);
+        this.handle_ptr = MCapstone._malloc(4);
 
         // Destructor
         this.delete = function () {
-            Module._free(this.handle_ptr);
+            MCapstone._free(this.handle_ptr);
         }
 
         // Disassemble
         this.disasm = function (buffer, addr, max) {
-            var handle = Module.getValue(this.handle_ptr, 'i32');
+            var handle = MCapstone.getValue(this.handle_ptr, 'i32');
 
             // Allocate buffer and copy data
-            var buffer_ptr = Module._malloc(buffer.length);
-            var buffer_heap = new Uint8Array(Module.HEAPU8.buffer, buffer_ptr, buffer.length);
+            var buffer_ptr = MCapstone._malloc(buffer.length);
+            var buffer_heap = new Uint8Array(MCapstone.HEAPU8.buffer, buffer_ptr, buffer.length);
             buffer_heap.set(new Uint8Array(buffer));
 
             // Pointer to the instruction array
-            var insn_ptr_ptr = Module._malloc(4);
+            var insn_ptr_ptr = MCapstone._malloc(4);
 
-            var count = Module.ccall('cs_disasm', 'number',
+            var count = MCapstone.ccall('cs_disasm', 'number',
                 ['number', 'pointer', 'number', 'number', 'number', 'pointer'],
                 [handle, buffer_heap.byteOffset, buffer_heap.length, addr, 0, max || 0, insn_ptr_ptr]
             );
 
             // Dereference intruction array
-            var insn_ptr = Module.getValue(insn_ptr_ptr, 'i32');
+            var insn_ptr = MCapstone.getValue(insn_ptr_ptr, 'i32');
             var insn_size = 232;
             var instructions = [];
 
@@ -123,18 +123,18 @@ var cs = {
                 instructions.push(new cs.Instruction(insn_ptr + i * insn_size));
             }
 
-            var count = Module.ccall('cs_free', 'void',
+            var count = MCapstone.ccall('cs_free', 'void',
                 ['pointer', 'number'],
                 [insn_ptr, count]
             );
 
-            Module._free(insn_ptr_ptr);
-            Module._free(buffer_ptr);
+            MCapstone._free(insn_ptr_ptr);
+            MCapstone._free(buffer_ptr);
             return instructions;
         };
 
         // Constructor
-        var ret = Module.ccall('cs_open', 'number',
+        var ret = MCapstone.ccall('cs_open', 'number',
             ['number', 'number', 'pointer'],
             [this.arch, this.mode, this.handle_ptr]
         );

@@ -24,7 +24,7 @@ var offset = 0x10000;
 // Initialize the decoder
 var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_64);
 
-// Output: Array of capstone.Instruction objects
+// Output: Array of cs.Instruction objects
 var instructions = d.disasm(buffer, offset);
 
 // Display results;

@@ -24,6 +24,12 @@ AVAILABLE_TARGETS = [
 CAPSTONE_DIR = os.path.abspath("capstone")
 
 def compileCapstone(targets):
+	# Clean CMake cache
+    if os.name == 'nt':
+        os.system('del capstone\\CMakeCache.txt')
+    if os.name == 'posix':
+        os.system('rm capstone/CMakeCache.txt')
+
     # CMake
     cmd = 'cmake'
     cmd += os.path.expandvars(' -DCMAKE_TOOLCHAIN_FILE=$EMSCRIPTEN/cmake/Modules/Platform/Emscripten.cmake')
