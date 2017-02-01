@@ -1,9 +1,12 @@
 /**
- * (c) 2014 Capstone.JS
+ * (c) 2014-2017 Capstone.JS
  * Wrapper made by Alexandro Sanchez Bach.
  */
 
-var capstone = {
+// Emscripten demodularize
+var MCapstone = new MCapstone();
+
+var cs = {
     // Return codes
     ERR_OK: 0,         // No error: everything was fine
     ERR_MEM: 1,        // Out-Of-Memory error: cs_open(), cs_disasm(), cs_disasm_iter()
@@ -77,13 +80,13 @@ var capstone = {
         this.mnemonic = Pointer_stringify(pointer + 34);
 
         // ASCII representation of instruction operands
-        this.op_str = Pointer_stringify(pointer + 66);   
+        this.op_str = Pointer_stringify(pointer + 66);
     },
 
     /**
      * Capstone object
      */
-    Cs: function (arch, mode) {
+    Capstone: function (arch, mode) {
         this.arch = arch;
         this.mode = mode;
         this.handle_ptr = Module._malloc(4);
@@ -117,7 +120,7 @@ var capstone = {
 
             // Save instructions
             for (var i = 0; i < count; i++) {
-                instructions.push(new capstone.Instruction(insn_ptr + i * insn_size));
+                instructions.push(new cs.Instruction(insn_ptr + i * insn_size));
             }
 
             var count = Module.ccall('cs_free', 'void',
@@ -136,7 +139,7 @@ var capstone = {
             [this.arch, this.mode, this.handle_ptr]
         );
 
-        if (ret != capstone.ERR_OK) {
+        if (ret != cs.ERR_OK) {
             console.error('Capstone.js: Function cs_open failed with code %d.', ret);
         }
     },

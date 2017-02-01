@@ -1,6 +1,5 @@
 Capstone.js
 ===========
-[![Last Release](https://img.shields.io/badge/version-3.0.4-brightgreen.svg?style=flat)](https://github.com/AlexAltea/capstone.js/releases)
 
 Port of the [Capstone](https://github.com/aquynh/capstone) disassembler framework for JavaScript. Powered by [Emscripten](https://github.com/kripken/emscripten).
 
@@ -19,14 +18,14 @@ bower install capstonejs
 ## Usage                                                      
 ```javascript
 // Input: Machine code bytes and offset where they are located
-var buffer = [0x55, 0x48, 0x8b, 0x05, 0xb8, 0x13, 0x00, 0x00];
-var offset = 0x1000;
+var buffer = [0x55, 0x48, 0x8B, 0x05, 0xB8, 0x13, 0x00, 0x00];
+var offset = 0x10000;
 
 // Initialize the decoder
-var cs = new capstone.Cs(capstone.ARCH_X86, capstone.MODE_64);
+var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_64);
 
 // Output: Array of capstone.Instruction objects
-var instructions = cs.disasm(buffer, offset);
+var instructions = d.disasm(buffer, offset);
 
 // Display results;
 instructions.forEach(function (instr) {
@@ -38,7 +37,7 @@ instructions.forEach(function (instr) {
 });
 
 // Delete decoder
-cs.delete();
+d.delete();
 ```
 
 ## Building
@@ -46,8 +45,8 @@ To build the Capstone.js library, clone the *master* branch of this repository, 
 
 1. Initialize the original Capstone submodule: `git submodule update --init`.
 
-2. Install the development and client dependencies with: `npm install` and `bower install`.
+2. Install the latest [Python 2.x (64-bit)](https://www.python.org/downloads/), [CMake](http://www.cmake.org/download/) and the [Emscripten SDK](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html). Follow the respective instructions and make sure all environment variables are configured correctly. Under Windows [MinGW](http://www.mingw.org/) (specifically *mingw32-make*) is required.
 
-3. Install the latest [Python 2.x (64-bit)](https://www.python.org/downloads/), [CMake](http://www.cmake.org/download/) and the [Emscripten SDK](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html). Follow the respective instructions and make sure all environment variables are configured correctly. Under Windows [MinGW](http://www.mingw.org/) (specifically *mingw32-make*) is required.
+3. Install the development dependencies with: `npm install`.
 
 4. Finally, build the source with: `grunt build`.

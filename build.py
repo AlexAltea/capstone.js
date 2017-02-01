@@ -15,6 +15,10 @@ EXPORTED_FUNCTIONS = [
     '_cs_reg_name'
 ]
 
+AVAILABLE_TARGETS = [
+    'ARM', 'ARM64', 'MIPS', 'PPC', 'SPARC', 'SYSZ', 'XCORE', 'X86'
+]
+
 def compileCapstone():
     # CMake
     cmd = 'cmake'
@@ -23,6 +27,11 @@ def compileCapstone():
     cmd += ' -DCMAKE_C_FLAGS=\"-Wno-warn-absolute-paths\"'
     cmd += ' -DCAPSTONE_BUILD_TESTS=OFF'
     cmd += ' -DCAPSTONE_BUILD_SHARED=OFF'
+    if targets:
+        targets = map(lambda t: t.upper(), targets)
+        for arch in AVAILABLE_TARGETS:
+            if arch not in targets:
+                cmd += ' -DCAPSTONE_%s_SUPPORT=0' % arch
     if os.name == 'nt':
         cmd += ' -G \"MinGW Makefiles\"'
     if os.name == 'posix':
@@ -40,10 +49,16 @@ def compileCapstone():
 
     # Compile static library to JavaScript
     cmd = os.path.expandvars('$EMSCRIPTEN/emcc')
-    cmd += ' -O1'
+    cmd += ' -Os --memory-init-file 0'
     cmd += ' capstone/libcapstone.a'
     cmd += ' -s EXPORTED_FUNCTIONS=\"[\''+ '\', \''.join(EXPORTED_FUNCTIONS) +'\']\"'
-    cmd += ' -o src/capstone.out.js'
+    cmd += ' -s MODULARIZE=1'
+    cmd += ' -s EXPORT_NAME="\'MCapstone\'"'
+    cmd += ' -o src/libcapstone.out.js'
+    if targets:
+        cmd += ' -o src/libcapstone-%s.out.js' % ('-'.join(targets))
+    else:
+        cmd += ' -o src/libcapstone.out.js'
     os.system(cmd)
 
 
@@ -52,4 +67,4 @@ if __name__ == "__main__":
         compileCapstone()        
     else:
         print "Your operating system is not supported by this script:"
-        print "Please, use Emscripten to compile Capstone manually to src/capstone.out.js"
+        print "Please, use Emscripten to compile Capstone manually to src/libcapstone.out.js"

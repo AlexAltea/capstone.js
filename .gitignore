@@ -1,8 +1,9 @@
 # Dependencies NodeJS
 node_modules/
+debug.log
 
 # Emscripten builds
 *.out.js
 
 # Capstone.js
-/dist/*.js
+/dist/capstone-*.js

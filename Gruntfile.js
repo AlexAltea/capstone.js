@@ -12,7 +12,13 @@ module.exports = function (grunt) {
     grunt.initConfig({
         exec: {
             emscripten: {
-                command: 'python build.py'
+                cmd: function (arch) {
+                    if (typeof arch === 'undefined') {
+                        return 'python build.py'
+                    } else {
+                        return 'python build.py ' + arch;
+                    }
+                }
             }
         },
         uglify: {
@@ -53,19 +59,30 @@ module.exports = function (grunt) {
     });
 
     // Project tasks
-    grunt.registerTask('test', [
-
-    ]);
-    grunt.registerTask('build', [
-        'exec:emscripten',
-        'uglify'
+    grunt.registerTask('build', 'Build for specific architecture', function (arch) {
+        if (typeof arch === 'undefined') {
+            grunt.config.set('lib.suffix', '');
+            grunt.task.run('exec:emscripten');
+            grunt.task.run('uglify');
+        } else {
+            grunt.config.set('lib.suffix', '-'+arch);
+            grunt.task.run('exec:emscripten:'+arch);
+            grunt.task.run('uglify');
+        }
+    });
+    grunt.registerTask('release', [
+        'build',
+        'build:arm',
+        'build:arm64',
+        'build:mips',
+        'build:ppc',
+        'build:sparc',
+        'build:sysz',
+        'build:x86',
+        'build:xcore',
     ]);
     grunt.registerTask('serve', [
         'connect',
         'watch'
-    ]);
-    grunt.registerTask('default', [
-        'test',
-        'build'
     ]);
 };

@@ -75,7 +75,7 @@
         </div>
 
         <div class="container">
-            
+
             <h2>Demo</h2>
             <p>
                 Before going to the Installation / Tutorial panels below, you might want to know how Capstone.js tastes like.
@@ -185,14 +185,14 @@
                     <h2>Tutorial</h2>
                     <p>
 <pre><code class="javascript">// Input: Machine code bytes and offset where they are located
-var buffer = [0x55, 0x48, 0x8b, 0x05, 0xb8, 0x13, 0x00, 0x00];
-var offset = 0x1000;
+var buffer = [0x55, 0x48, 0x8B, 0x05, 0xB8, 0x13, 0x00, 0x00];
+var offset = 0x10000;
 
 // Initialize the decoder
-var cs = new capstone.Cs(capstone.ARCH_X86, capstone.MODE_64);
+var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_64);
 
 // Output: Array of capstone.Instruction objects
-var instructions = cs.disasm(buffer, offset);
+var instructions = d.disasm(buffer, offset);
 
 // Display results;
 instructions.forEach(function (instr) {
@@ -204,7 +204,7 @@ instructions.forEach(function (instr) {
 });
 
 // Delete decoder
-cs.delete();</code></pre>
+d.delete();</code></pre>
                     </p>
                 </div>
             </div>
@@ -224,9 +224,9 @@ cs.delete();</code></pre>
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/languages/javascript.min.js"></script>
-        
+
         <!-- CapstoneJS -->
-        <script src="//github.com/AlexAltea/capstone.js/releases/download/v3.0.4/capstone.min.js"></script>
+        <script src="dist/capstone.min.js"></script>
 
         <!-- Simple demo of CapstoneJS -->
         <script>
@@ -234,11 +234,11 @@ cs.delete();</code></pre>
             hljs.initHighlightingOnLoad();
 
             // Capstone global object
-            var cs = new capstone.Cs(capstone.ARCH_X86, capstone.MODE_64);
+            var d = new cs.Capstone(capstone.ARCH_X86, capstone.MODE_64);
 
             function capstoneConfigure(arch, mode) {
-                cs.delete();
-                cs = new capstone.Cs(arch, mode);
+                d.delete();
+                d = new cs.Capstone(arch, mode);
             }
 
             function capstoneRender($scope) {
@@ -248,7 +248,7 @@ cs.delete();</code></pre>
                     for (var i = 0; i < trimmedBuffer.length; i += 2) {
                         csBuffer.push(parseInt(trimmedBuffer.substr(i, 2), 16));
                     }
-                    $scope.instructions = cs.disasm(csBuffer, $scope.offset);
+                    $scope.instructions = d.disasm(csBuffer, $scope.offset);
                 }
             }
 
