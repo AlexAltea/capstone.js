@@ -4,6 +4,7 @@
 # This scripts compiles the original Capstone framework to JavaScript
 
 import os
+import sys
 
 EXPORTED_FUNCTIONS = [
     '_cs_open',
@@ -19,7 +20,10 @@ AVAILABLE_TARGETS = [
     'ARM', 'ARM64', 'MIPS', 'PPC', 'SPARC', 'SYSZ', 'XCORE', 'X86'
 ]
 
-def compileCapstone():
+# Directories
+CAPSTONE_DIR = os.path.abspath("capstone")
+
+def compileCapstone(targets):
     # CMake
     cmd = 'cmake'
     cmd += os.path.expandvars(' -DCMAKE_TOOLCHAIN_FILE=$EMSCRIPTEN/cmake/Modules/Platform/Emscripten.cmake')
@@ -63,8 +67,13 @@ def compileCapstone():
 
 
 if __name__ == "__main__":
+    # Initialize Capstone submodule if necessary
+    if not os.listdir(CAPSTONE_DIR):
+        os.system("git submodule update --init")
+    # Compile Capstone
+	targets = sorted(sys.argv[1:])
     if os.name in ['nt', 'posix']:
-        compileCapstone()        
+        compileCapstone(targets)
     else:
         print "Your operating system is not supported by this script:"
         print "Please, use Emscripten to compile Capstone manually to src/libcapstone.out.js"

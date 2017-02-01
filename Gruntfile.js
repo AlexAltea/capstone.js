@@ -21,16 +21,13 @@ module.exports = function (grunt) {
                 }
             }
         },
-        uglify: {
+        concat: {
             dist: {
-                options: {
-                    compress: true,
-                },
-                files: {
-                    'dist/capstone.min.js': [
-                        'src/**/*.js'
-                    ]
-                }
+                src: [
+                    'src/libcapstone<%= lib.suffix %>.out.js',
+                    'src/capstone-wrapper.js'
+                ],
+                dest: 'dist/capstone<%= lib.suffix %>.min.js'
             }
         },
         connect: {
@@ -63,11 +60,11 @@ module.exports = function (grunt) {
         if (typeof arch === 'undefined') {
             grunt.config.set('lib.suffix', '');
             grunt.task.run('exec:emscripten');
-            grunt.task.run('uglify');
+            grunt.task.run('concat');
         } else {
             grunt.config.set('lib.suffix', '-'+arch);
             grunt.task.run('exec:emscripten:'+arch);
-            grunt.task.run('uglify');
+            grunt.task.run('concat');
         }
     });
     grunt.registerTask('release', [
