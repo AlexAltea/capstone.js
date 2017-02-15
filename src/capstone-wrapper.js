@@ -173,14 +173,14 @@ var cs = {
             // Allocate buffer and copy data
             var buffer_len = buffer.length;
             var buffer_ptr = MCapstone._malloc(buffer_len);
-            writeArrayToMemory(buffer, buffer_ptr);
+            MCapstone.writeArrayToMemory(buffer, buffer_ptr);
 
             // Pointer to the instruction array
             var insn_ptr_ptr = MCapstone._malloc(4);
 
             var count = MCapstone.ccall('cs_disasm', 'number',
                 ['number', 'pointer', 'number', 'number', 'number', 'pointer'],
-                [handle, buffer_heap.byteOffset, buffer_heap.length, addr, 0, max || 0, insn_ptr_ptr]
+                [handle, buffer_ptr, buffer_len, addr, 0, max || 0, insn_ptr_ptr]
             );
             if (count == 0 && buffer_len != 0) {
                 MCapstone._free(insn_ptr_ptr);

@@ -55,6 +55,7 @@ def generateConstants():
         with open(path, 'r') as f:
             code = f.read()
             code = re.sub('\n([^#\t\r\n ])', '\ncs.\g<1>', code)
+            code = re.sub('(.* = [A-Za-z_])', '# \g<1>', code)
             code = code.replace('#', '//')
         out.write(code)
     out.close()
