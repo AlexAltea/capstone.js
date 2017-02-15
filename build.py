@@ -12,8 +12,21 @@ EXPORTED_FUNCTIONS = [
     '_cs_free',
     '_cs_close',
     '_cs_option',
+    '_cs_group_name',
     '_cs_insn_name',
-    '_cs_reg_name'
+    '_cs_insn_group',
+    '_cs_reg_name',
+    '_cs_errno',
+    '_cs_support',
+    '_cs_version',
+    '_cs_strerror',
+    '_cs_disasm_ex',
+    '_cs_disasm_iter',
+    '_cs_malloc',
+    '_cs_reg_read',
+    '_cs_reg_write',
+    '_cs_op_count',
+    '_cs_op_index',
 ]
 
 AVAILABLE_TARGETS = [
@@ -24,7 +37,7 @@ AVAILABLE_TARGETS = [
 CAPSTONE_DIR = os.path.abspath("capstone")
 
 def compileCapstone(targets):
-	# Clean CMake cache
+    # Clean CMake cache
     if os.name == 'nt':
         os.system('del capstone\\CMakeCache.txt')
     if os.name == 'posix':
@@ -64,9 +77,8 @@ def compileCapstone(targets):
     cmd += ' -s EXPORTED_FUNCTIONS=\"[\''+ '\', \''.join(EXPORTED_FUNCTIONS) +'\']\"'
     cmd += ' -s MODULARIZE=1'
     cmd += ' -s EXPORT_NAME="\'MCapstone\'"'
-    cmd += ' -o src/libcapstone.out.js'
     if targets:
-        cmd += ' -o src/libcapstone-%s.out.js' % ('-'.join(targets))
+        cmd += ' -o src/libcapstone-%s.out.js' % '-'.join(targets).lower()
     else:
         cmd += ' -o src/libcapstone.out.js'
     os.system(cmd)
