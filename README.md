@@ -37,7 +37,7 @@ instructions.forEach(function (instr) {
 });
 
 // Delete decoder
-d.delete();
+d.close();
 ```
 
 ## Building

@@ -90,6 +90,28 @@ var cs = {
     SUPPORT_DIET: 0xFFFF + 1,
     SUPPORT_X86_REDUCE: 0xFFFF + 2,
 
+    version: function() {
+        major_ptr = MCapstone._malloc(4);
+        minor_ptr = MCapstone._malloc(4);
+        var ret = MCapstone.ccall('cs_version', 'number',
+            ['pointer', 'pointer'], [major_ptr, minor_ptr]);
+        major = MCapstone.getValue(major_ptr, 'i32');
+        minor = MCapstone.getValue(minor_ptr, 'i32');
+        MCapstone._free(major_ptr);
+        MCapstone._free(minor_ptr);
+        return ret;
+    },
+
+    support: function(query) {
+        var ret = MCapstone.ccall('cs_support', 'number', ['number'], [query]);
+        return ret;
+    },
+
+    strerror: function(code) {
+        var ret = MCapstone.ccall('cs_strerror', 'string', ['number'], [code]);
+        return ret;
+    },
+
     /**
      * Instruction object
      */
@@ -128,9 +150,20 @@ var cs = {
         this.mode = mode;
         this.handle_ptr = MCapstone._malloc(4);
 
-        // Destructor
-        this.delete = function () {
-            MCapstone._free(this.handle_ptr);
+        // Options
+        this.option = function(option, value) {
+            var handle = MCapstone.getValue(this.handle_ptr, '*');
+            if (!handle) {
+                return;
+            }
+            var ret = MCapstone.ccall('cs_option', 'number',
+                ['pointer', 'number', 'number'],
+                [handle, option, value]
+            );
+            if (ret != cs.ERR_OK) {
+                var error = 'Capstone.js: Function cs_option failed with code ' + ret + ':\n' + cs.strerror(ret);
+                throw error;
+            }
         }
 
         // Disassemble
@@ -138,9 +171,9 @@ var cs = {
             var handle = MCapstone.getValue(this.handle_ptr, 'i32');
 
             // Allocate buffer and copy data
-            var buffer_ptr = MCapstone._malloc(buffer.length);
-            var buffer_heap = new Uint8Array(MCapstone.HEAPU8.buffer, buffer_ptr, buffer.length);
-            buffer_heap.set(new Uint8Array(buffer));
+            var buffer_len = buffer.length;
+            var buffer_ptr = MCapstone._malloc(buffer_len);
+            writeArrayToMemory(buffer, buffer_ptr);
 
             // Pointer to the instruction array
             var insn_ptr_ptr = MCapstone._malloc(4);
@@ -149,6 +182,14 @@ var cs = {
                 ['number', 'pointer', 'number', 'number', 'number', 'pointer'],
                 [handle, buffer_heap.byteOffset, buffer_heap.length, addr, 0, max || 0, insn_ptr_ptr]
             );
+            if (count == 0 && buffer_len != 0) {
+                MCapstone._free(insn_ptr_ptr);
+                MCapstone._free(buffer_ptr);
+
+                var code = this.errno();
+                var error = 'Capstone.js: Function cs_disasm failed with code ' + code + ':\n' + cs.strerror(code);
+                throw error;
+            }
 
             // Dereference intruction array
             var insn_ptr = MCapstone.getValue(insn_ptr_ptr, 'i32');
@@ -170,6 +211,41 @@ var cs = {
             return instructions;
         };
 
+        this.reg_name = function(reg_id) {
+            var handle = MCapstone.getValue(this.handle_ptr, '*');
+            var ret = MCapstone.ccall('cs_reg_name', 'string', ['pointer', 'number'], [handle, reg_id]);
+            return ret;
+        }
+
+        this.insn_name = function(insn_id) {
+            var handle = MCapstone.getValue(this.handle_ptr, '*');
+            var ret = MCapstone.ccall('cs_insn_name', 'string', ['pointer', 'number'], [handle, insn_id]);
+            return ret;
+        }
+
+        this.group_name = function(group_id) {
+            var handle = MCapstone.getValue(this.handle_ptr, '*');
+            var ret = MCapstone.ccall('cs_group_name', 'string', ['pointer', 'number'], [handle, group_id]);
+            return ret;
+        }
+
+        this.errno = function() {
+            var handle = MCapstone.getValue(this.handle_ptr, '*');
+            var ret = MCapstone.ccall('cs_errno', 'number', ['pointer'], [handle]);
+            return ret;
+        }
+
+        this.close = function() {
+            var handle = MCapstone.getValue(this.handle_ptr, '*');
+            var ret = MCapstone.ccall('cs_close', 'number', ['pointer'], [handle]);
+            if (ret != cs.ERR_OK) {
+                var error = 'Capstone.js: Function cs_close failed with code ' + ret + ':\n' + cs.strerror(ret);
+                throw error;
+            }
+            MCapstone._free(this.handle_ptr);
+        }
+
+
         // Constructor
         var ret = MCapstone.ccall('cs_open', 'number',
             ['number', 'number', 'pointer'],
@@ -177,7 +253,9 @@ var cs = {
         );
 
         if (ret != cs.ERR_OK) {
-            console.error('Capstone.js: Function cs_open failed with code %d.', ret);
+            MCapstone.setValue(this.handle_ptr, 0, '*');
+            var error = 'Capstone.js: Function cs_open failed with code ' + ret + ':\n' + cs.strerror(ret);
+            throw error;
         }
     },
 };

@@ -204,7 +204,7 @@ instructions.forEach(function (instr) {
 });
 
 // Delete decoder
-d.delete();</code></pre>
+d.close();</code></pre>
                     </p>
                 </div>
             </div>
@@ -237,7 +237,7 @@ d.delete();</code></pre>
             var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_64);
 
             function capstoneConfigure(arch, mode) {
-                d.delete();
+                d.close();
                 d = new cs.Capstone(arch, mode);
             }
 
