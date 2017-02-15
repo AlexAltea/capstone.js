@@ -4,6 +4,7 @@
 # This scripts compiles the original Capstone framework to JavaScript
 
 import os
+import re
 import sys
 
 EXPORTED_FUNCTIONS = [
@@ -29,12 +30,34 @@ EXPORTED_FUNCTIONS = [
     '_cs_op_index',
 ]
 
+EXPORTED_CONSTANTS = [
+    'bindings/python/capstone/arm64_const.py',
+    'bindings/python/capstone/arm_const.py',
+    'bindings/python/capstone/mips_const.py',
+    'bindings/python/capstone/ppc_const.py',
+    'bindings/python/capstone/sparc_const.py',
+    'bindings/python/capstone/sysz_const.py',
+    'bindings/python/capstone/x86_const.py',
+    'bindings/python/capstone/xcore_const.py',
+]
+
 AVAILABLE_TARGETS = [
     'ARM', 'ARM64', 'MIPS', 'PPC', 'SPARC', 'SYSZ', 'XCORE', 'X86'
 ]
 
 # Directories
 CAPSTONE_DIR = os.path.abspath("capstone")
+
+def generateConstants():
+    out = open('src/capstone-constants.js', 'w')
+    for path in EXPORTED_CONSTANTS:
+        path = os.path.join(CAPSTONE_DIR, path)
+        with open(path, 'r') as f:
+            code = f.read()
+            code = re.sub('\n([^#\t\r\n ])', '\ncs.\g<1>', code)
+            code = code.replace('#', '//')
+        out.write(code)
+    out.close()
 
 def compileCapstone(targets):
     # Clean CMake cache
@@ -91,6 +114,7 @@ if __name__ == "__main__":
     # Compile Capstone
     targets = sorted(sys.argv[1:])
     if os.name in ['nt', 'posix']:
+        generateConstants()
         compileCapstone(targets)
     else:
         print "Your operating system is not supported by this script:"

@@ -53,6 +53,43 @@ var cs = {
     MODE_MIPS32: 1 << 2,       // Mips32 ISA (Mips)
     MODE_MIPS64: 1 << 3,       // Mips64 ISA (Mips)
 
+    // Options
+    OPT_SYNTAX: 1,             // Intel X86 asm syntax (CS_ARCH_X86 arch)
+    OPT_DETAIL: 2,             // Break down instruction structure into details
+    OPT_MODE: 3,               // Change engine's mode at run-time
+    OPT_MEM: 4,                // Change engine's mode at run-time
+    OPT_SKIPDATA: 5,           // Skip data when disassembling
+    OPT_SKIPDATA_SETUP: 6,     // Setup user-defined function for SKIPDATA option
+
+    // Capstone option value
+    OPT_OFF: 0,                // Turn OFF an option - default option of CS_OPT_DETAIL
+    OPT_ON: 3,                 // Turn ON an option (CS_OPT_DETAIL)
+
+    // Capstone syntax value
+    OPT_SYNTAX_DEFAULT: 0,     // Default assembly syntax of all platforms (CS_OPT_SYNTAX)
+    OPT_SYNTAX_INTEL: 1,       // Intel X86 asm syntax - default syntax on X86 (CS_OPT_SYNTAX, CS_ARCH_X86)
+    OPT_SYNTAX_ATT: 2,         // ATT asm syntax (CS_OPT_SYNTAX, CS_ARCH_X86)
+    OPT_SYNTAX_NOREGNAME: 3,   // Asm syntax prints register name with only number - (CS_OPT_SYNTAX, CS_ARCH_PPC, CS_ARCH_ARM)
+
+    // Common instruction groups - to be consistent across all architectures.
+    GRP_INVALID: 0,            // uninitialized/invalid group.
+    GRP_JUMP: 1,               // all jump instructions (conditional+direct+indirect jumps)
+    GRP_CALL: 2,               // all call instructions
+    GRP_RET: 3,                // all return instructions
+    GRP_INT: 4,                // all interrupt instructions (int+syscall)
+    GRP_IRET: 5,               // all interrupt return instructions
+
+    // Common instruction operand types - to be consistent across all architectures.
+    OP_INVALID: 0,
+    OP_REG: 1,
+    OP_IMM: 2,
+    OP_MEM: 3,
+    OP_FP: 4,
+
+    // query id for cs_support()
+    SUPPORT_DIET: 0xFFFF + 1,
+    SUPPORT_X86_REDUCE: 0xFFFF + 2,
+
     /**
      * Instruction object
      */

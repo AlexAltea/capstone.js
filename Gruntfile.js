@@ -25,7 +25,8 @@ module.exports = function (grunt) {
             dist: {
                 src: [
                     'src/libcapstone<%= lib.suffix %>.out.js',
-                    'src/capstone-wrapper.js'
+                    'src/capstone-wrapper.js',
+                    'src/capstone-constants.js'
                 ],
                 dest: 'dist/capstone<%= lib.suffix %>.min.js'
             }
