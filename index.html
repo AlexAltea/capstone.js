@@ -185,11 +185,11 @@
                     <h2>Tutorial</h2>
                     <p>
 <pre><code class="javascript">// Input: Machine code bytes and offset where they are located
-var buffer = [0x55, 0x48, 0x8B, 0x05, 0xB8, 0x13, 0x00, 0x00];
+var buffer = [0x55, 0x31, 0xD2, 0x89, 0xE5, 0x8B, 0x45, 0x08];
 var offset = 0x10000;
 
 // Initialize the decoder
-var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_64);
+var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_32);
 
 // Output: Array of cs.Instruction objects
 var instructions = d.disasm(buffer, offset);
