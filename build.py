@@ -95,11 +95,17 @@ def compileCapstone(targets):
     os.chdir('..')
 
     # Compile static library to JavaScript
+    exports = EXPORTED_FUNCTIONS[:]
+    methods = [
+        'ccall', 'getValue', 'setValue', 'writeArrayToMemory', 'UTF8ToString'
+    ]
     cmd = os.path.expandvars('$EMSCRIPTEN/emcc')
     cmd += ' -Os --memory-init-file 0'
     cmd += ' capstone/libcapstone.a'
-    cmd += ' -s EXPORTED_FUNCTIONS=\"[\''+ '\', \''.join(EXPORTED_FUNCTIONS) +'\']\"'
+    cmd += ' -s EXPORTED_FUNCTIONS=\"[\''+ '\', \''.join(exports) +'\']\"'
+    cmd += ' -s EXTRA_EXPORTED_RUNTIME_METHODS=\"[\''+ '\', \''.join(methods) +'\']\"'
     cmd += ' -s MODULARIZE=1'
+    cmd += ' -s WASM=0'
     cmd += ' -s EXPORT_NAME="\'MCapstone\'"'
     if targets:
         cmd += ' -o src/libcapstone-%s.out.js' % '-'.join(targets).lower()

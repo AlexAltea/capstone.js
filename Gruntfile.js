@@ -31,6 +31,13 @@ module.exports = function (grunt) {
                 dest: 'dist/capstone<%= lib.suffix %>.min.js'
             }
         },
+        copy: {
+            main: {
+                files: [
+                    { expand: true, flatten: true, src: ['src/*.wasm'], dest: 'dist/', filter: 'isFile' },
+                ]
+            }
+        },
         connect: {
             options: {
                 port: 9001,
@@ -61,12 +68,12 @@ module.exports = function (grunt) {
         if (typeof arch === 'undefined') {
             grunt.config.set('lib.suffix', '');
             grunt.task.run('exec:emscripten');
-            grunt.task.run('concat');
         } else {
             grunt.config.set('lib.suffix', '-'+arch);
             grunt.task.run('exec:emscripten:'+arch);
-            grunt.task.run('concat');
         }
+        grunt.task.run('concat');
+        grunt.task.run('copy');
     });
     grunt.registerTask('release', [
         'build',

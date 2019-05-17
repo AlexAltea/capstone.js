@@ -136,10 +136,10 @@ var cs = {
         }
 
         // ASCII representation of instruction mnemonic
-        this.mnemonic = MCapstone.Pointer_stringify(pointer + 34);
+        this.mnemonic = MCapstone.UTF8ToString(pointer + 34);
 
         // ASCII representation of instruction operands
-        this.op_str = MCapstone.Pointer_stringify(pointer + 66);
+        this.op_str = MCapstone.UTF8ToString(pointer + 66);
 
         // Details
         var detail = {};
@@ -569,8 +569,7 @@ var cs = {
         }
 
         this.close = function() {
-            var handle = MCapstone.getValue(this.handle_ptr, '*');
-            var ret = MCapstone.ccall('cs_close', 'number', ['pointer'], [handle]);
+            var ret = MCapstone.ccall('cs_close', 'number', ['pointer'], [this.handle_ptr]);
             if (ret != cs.ERR_OK) {
                 var error = 'Capstone.js: Function cs_close failed with code ' + ret + ':\n' + cs.strerror(ret);
                 throw error;
