@@ -146,23 +146,24 @@ var cs = {
         var detail_addr = MCapstone.getValue(pointer + 228, '*');
         if (detail_addr != 0) {
             // Architecture-agnostic instruction info
+            detail.op = [];
             detail.regs_read = [];
-            var regs_read_count = MCapstone.getValue(detail_addr + 12, 'i8');
+            var regs_read_count = MCapstone.getValue(detail_addr + 24, 'i8');
             for (var i = 0; i < regs_read_count; i++) {
-                detail.regs_read[i] = MCapstone.getValue(detail_addr + 0 + i, 'i8');
+                detail.regs_read[i] = MCapstone.getValue(detail_addr + 0 + i, 'i16');
             }
             detail.regs_write = [];
-            var regs_write_count = MCapstone.getValue(detail_addr + 33, 'i8');
+            var regs_write_count = MCapstone.getValue(detail_addr + 66, 'i8');
             for (var i = 0; i < regs_write_count; i++) {
-                detail.regs_write[i] = MCapstone.getValue(detail_addr + 13 + i, 'i8');
+                detail.regs_write[i] = MCapstone.getValue(detail_addr + 26 + i, 'i16');
             }
             detail.groups = [];
-            var groups_count = MCapstone.getValue(detail_addr + 42, 'i8');
+            var groups_count = MCapstone.getValue(detail_addr + 75, 'i8');
             for (var i = 0; i < groups_count; i++) {
-                detail.groups[i] = MCapstone.getValue(detail_addr + 34 + i, 'i8');
+                detail.groups[i] = MCapstone.getValue(detail_addr + 67 + i, 'i8');
             }
             // Architecture-specific instruction info
-            var arch_info_addr = detail_addr + 44;
+            var arch_info_addr = detail_addr + 80;
             switch (arch) {
             case cs.ARCH_ARM:
                 detail.usermode = Boolean(MCapstone.getValue(arch_info_addr + 0x00, 'i8'));
@@ -307,44 +308,48 @@ var cs = {
                 detail.addr_size = MCapstone.getValue(arch_info_addr + 0x09, 'i8');
                 detail.modrm = MCapstone.getValue(arch_info_addr + 0x0A, 'i8');
                 detail.sib = MCapstone.getValue(arch_info_addr + 0x0B, 'i8');
-                detail.disp = MCapstone.getValue(arch_info_addr + 0x0C, 'i32');
-                detail.sib_index = MCapstone.getValue(arch_info_addr + 0x10, 'i32');
-                detail.sib_scale = MCapstone.getValue(arch_info_addr + 0x14, 'i8');
-                detail.sib_base = MCapstone.getValue(arch_info_addr + 0x18, 'i32');
-                detail.sse_cc = MCapstone.getValue(arch_info_addr + 0x1C, 'i32');
-                detail.avx_cc = MCapstone.getValue(arch_info_addr + 0x20, 'i32');
-                detail.avx_sae = MCapstone.getValue(arch_info_addr + 0x24, 'i8');
-                detail.avx_rm = MCapstone.getValue(arch_info_addr + 0x28, 'i32');
+                detail.disp = MCapstone.getValue(arch_info_addr + 0x10, 'i64');
+                detail.sib_index = MCapstone.getValue(arch_info_addr + 0x18, 'i32');
+                detail.sib_scale = MCapstone.getValue(arch_info_addr + 0x1C, 'i8');
+                detail.sib_base = MCapstone.getValue(arch_info_addr + 0x20, 'i32');
+                detail.xop_cc = MCapstone.getValue(arch_info_addr + 0x24, 'i32');
+                detail.sse_cc = MCapstone.getValue(arch_info_addr + 0x28, 'i32');
+                detail.avx_cc = MCapstone.getValue(arch_info_addr + 0x2C, 'i32');
+                detail.avx_sae = MCapstone.getValue(arch_info_addr + 0x30, 'i8');
+                detail.avx_rm = MCapstone.getValue(arch_info_addr + 0x34, 'i32');
+                detail.eflags = MCapstone.getValue(arch_info_addr + 0x38, 'i64');
+                detail.fpu_flags = MCapstone.getValue(arch_info_addr + 0x38, 'i64');
                 // Operands
-                var op_size = 40;
-                var op_count = MCapstone.getValue(arch_info_addr + 0x2C, 'i8');
+                var op_size = 48;
+                var op_count = MCapstone.getValue(arch_info_addr + 0x40, 'i8');
                 for (var i = 0; i < op_count; i++) {
                     var op = {};
-                    var op_addr = arch_info_addr + 0x30 + (i * op_size);
+                    var op_addr = arch_info_addr + 0x48 + (i * op_size);
                     op.type = MCapstone.getValue(op_addr + 0, 'i32');
                     switch (op.type) {
                     case cs.X86_OP_REG:
-                        op.reg = MCapstone.getValue(op_addr + 4, 'i32');
+                        op.reg = MCapstone.getValue(op_addr + 8, 'i32');
                         break;
                     case cs.X86_OP_IMM:
-                        op.imm = MCapstone.getValue(op_addr + 4, 'i64');
+                        op.imm = MCapstone.getValue(op_addr + 8, 'i64');
                         break;
                     case cs.X86_OP_FP:
-                        op.fp = MCapstone.getValue(op_addr + 4, 'double');
+                        op.fp = MCapstone.getValue(op_addr + 8, 'double');
                         break;
                     case cs.X86_OP_MEM:
                         op.mem = {
-                            segment:  MCapstone.getValue(op_addr +  4, 'i32'),
-                            base:     MCapstone.getValue(op_addr +  8, 'i32'),
-                            index:    MCapstone.getValue(op_addr + 12, 'i32'),
-                            scale:    MCapstone.getValue(op_addr + 16, 'i32'),
-                            disp:     MCapstone.getValue(op_addr + 20, 'i64'),
+                            segment:  MCapstone.getValue(op_addr +  8, 'i32'),
+                            base:     MCapstone.getValue(op_addr + 12, 'i32'),
+                            index:    MCapstone.getValue(op_addr + 16, 'i32'),
+                            scale:    MCapstone.getValue(op_addr + 20, 'i32'),
+                            disp:     MCapstone.getValue(op_addr + 24, 'i64'),
                         };
                         break;
                     }
-                    op.size = MCapstone.getValue(op_addr + 28, 'i8');
-                    op.avx_bcast = MCapstone.getValue(op_addr + 32, 'i32');
-                    op.avx_zero_opmask = MCapstone.getValue(op_addr + 36, 'i8');
+                    op.size = MCapstone.getValue(op_addr + 32, 'i8');
+                    op.access = MCapstone.getValue(op_addr + 33, 'i8');
+                    op.avx_bcast = MCapstone.getValue(op_addr + 36, 'i32');
+                    op.avx_zero_opmask = MCapstone.getValue(op_addr + 40, 'i8');
                     detail.op[i] = op;
                 }
                 break;
