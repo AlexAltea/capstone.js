@@ -4,9 +4,11 @@
  */
 
 // Emscripten demodularize
-var MCapstone = new MCapstone();
+MCapstone = MCapstone();
 
 var cs = {
+    MCapstone: MCapstone,
+    
     // Return codes
     ERR_OK: 0,         // No error: everything was fine
     ERR_MEM: 1,        // Out-Of-Memory error: cs_open(), cs_disasm(), cs_disasm_iter()
