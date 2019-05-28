@@ -3,6 +3,7 @@
 # INFORMATION:
 # This scripts compiles the original Capstone framework to JavaScript
 
+from __future__ import print_function
 import os
 import re
 import sys
@@ -85,7 +86,7 @@ def compileCapstone(targets):
         cmd += ' -G \"Unix Makefiles\"'
     cmd += ' capstone/CMakeLists.txt'
     if os.system(cmd) != 0:
-        print "CMake errored"
+        print("CMake errored")
         sys.exit(1)
 
     # MinGW (Windows) or Make (Linux/Unix)
@@ -95,7 +96,7 @@ def compileCapstone(targets):
     if os.name == 'posix':
         make = 'make'
     if os.system(make) != 0:
-        print "Make errored"
+        print("Make errored")
         sys.exit(1)
     os.chdir('..')
 
@@ -118,7 +119,7 @@ def compileCapstone(targets):
     else:
         cmd += ' -o src/libcapstone.out.js'
     if os.system(cmd) != 0:
-        print "Emscripten errored"
+        print("Emscripten errored")
         sys.exit(1)
 
 
@@ -132,5 +133,5 @@ if __name__ == "__main__":
         generateConstants()
         compileCapstone(targets)
     else:
-        print "Your operating system is not supported by this script:"
-        print "Please, use Emscripten to compile Capstone manually to src/libcapstone.out.js"
+        print("Your operating system is not supported by this script:")
+        print("Please, use Emscripten to compile Capstone manually to src/libcapstone.out.js")
