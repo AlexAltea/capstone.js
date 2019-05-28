@@ -50,3 +50,13 @@ To build the Capstone.js library, clone the *master* branch of this repository, 
 3. Install the development dependencies with: `npm install`.
 
 4. Finally, build the source with: `grunt build`.
+
+Note: To use WebAssembly, change `WASM=0` to `WASM=1` in `build.py`.
+
+It will automatically load the `.wasm` binary, but you should wait for it to load:
+
+```javascript
+cs.MCapstone.then(() => {
+    // ... initialize and use Capstone here ....
+});
+```
