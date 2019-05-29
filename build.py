@@ -9,6 +9,8 @@ import re
 import sys
 
 EXPORTED_FUNCTIONS = [
+    '_malloc',
+    '_free',
     '_cs_open',
     '_cs_disasm',
     '_cs_free',
