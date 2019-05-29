@@ -3,6 +3,7 @@
 # INFORMATION:
 # This scripts compiles the original Capstone framework to JavaScript
 
+from __future__ import print_function
 import os
 import re
 import sys
@@ -62,10 +63,10 @@ def generateConstants():
 
 def compileCapstone(targets):
     # Clean CMake cache
-    if os.name == 'nt':
-        os.system('del capstone\\CMakeCache.txt')
-    if os.name == 'posix':
-        os.system('rm capstone/CMakeCache.txt')
+    try:
+        os.remove('capstone/CMakeCache.txt')
+    except OSError:
+        pass
 
     # CMake
     cmd = 'cmake'
@@ -84,14 +85,19 @@ def compileCapstone(targets):
     if os.name == 'posix':
         cmd += ' -G \"Unix Makefiles\"'
     cmd += ' capstone/CMakeLists.txt'
-    os.system(cmd)
+    if os.system(cmd) != 0:
+        print("CMake errored")
+        sys.exit(1)
 
     # MinGW (Windows) or Make (Linux/Unix)
     os.chdir('capstone')
     if os.name == 'nt':
-        os.system('mingw32-make')
+        make = 'mingw32-make'
     if os.name == 'posix':
-        os.system('make')
+        make = 'make'
+    if os.system(make) != 0:
+        print("Make errored")
+        sys.exit(1)
     os.chdir('..')
 
     # Compile static library to JavaScript
@@ -112,7 +118,9 @@ def compileCapstone(targets):
         cmd += ' -o src/libcapstone-%s.out.js' % '-'.join(targets).lower()
     else:
         cmd += ' -o src/libcapstone.out.js'
-    os.system(cmd)
+    if os.system(cmd) != 0:
+        print("Emscripten errored")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
@@ -125,5 +133,5 @@ if __name__ == "__main__":
         generateConstants()
         compileCapstone(targets)
     else:
-        print "Your operating system is not supported by this script:"
-        print "Please, use Emscripten to compile Capstone manually to src/libcapstone.out.js"
+        print("Your operating system is not supported by this script:")
+        print("Please, use Emscripten to compile Capstone manually to src/libcapstone.out.js")
