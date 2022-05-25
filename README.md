@@ -10,6 +10,10 @@ To add Capstone.js to your web application, include it with:
 ```html
 <script src="capstone.min.js"></script>
 ```
+or install it with the NPM command:
+```bash
+npm install @alexaltea/capstone-js
+```
 or install it with the Bower command:
 ```bash
 bower install capstonejs
