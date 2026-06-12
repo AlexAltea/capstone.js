@@ -113,8 +113,8 @@ def compileCapstone(targets):
     methods = [
         'ccall', 'getValue', 'setValue', 'writeArrayToMemory', 'UTF8ToString'
     ]
-    cmd = os.path.expandvars('$EMSCRIPTEN/emcc')
-    cmd += ' -Os --memory-init-file 0'
+    cmd = os.path.expandvars('emcc')
+    cmd += ' -Os'
     cmd += ' capstone/libcapstone.a'
     cmd += ' -s EXPORTED_FUNCTIONS=\"[\''+ '\', \''.join(exports) +'\']\"'
     cmd += ' -s EXTRA_EXPORTED_RUNTIME_METHODS=\"[\''+ '\', \''.join(methods) +'\']\"'
