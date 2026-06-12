@@ -36,16 +36,22 @@ EXPORTED_FUNCTIONS = [
 EXPORTED_CONSTANTS = [
     'bindings/python/capstone/arm64_const.py',
     'bindings/python/capstone/arm_const.py',
+    'bindings/python/capstone/evm_const.py',
+    'bindings/python/capstone/m680x_const.py',
+    'bindings/python/capstone/m68k_const.py',
     'bindings/python/capstone/mips_const.py',
     'bindings/python/capstone/ppc_const.py',
     'bindings/python/capstone/sparc_const.py',
     'bindings/python/capstone/sysz_const.py',
+    'bindings/python/capstone/tms320c64x_const.py',
     'bindings/python/capstone/x86_const.py',
     'bindings/python/capstone/xcore_const.py',
 ]
 
 AVAILABLE_TARGETS = [
-    'ARM', 'ARM64', 'MIPS', 'PPC', 'SPARC', 'SYSZ', 'XCORE', 'X86'
+    'ARM', 'ARM64', 'MIPS', 'PPC', 'SPARC', 'SYSZ', 'XCORE', 'X86',
+    'M68K', 'TMS320C64X', 'M680X', 'EVM', 'MOS65XX', 'WASM', 'BPF',
+    'RISCV', 'SH', 'TRICORE'
 ]
 
 # Directories
