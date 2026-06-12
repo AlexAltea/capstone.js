@@ -117,7 +117,7 @@ def compileCapstone(targets):
     cmd += ' -Os'
     cmd += ' capstone/libcapstone.a'
     cmd += ' -s EXPORTED_FUNCTIONS=\"[\''+ '\', \''.join(exports) +'\']\"'
-    cmd += ' -s EXTRA_EXPORTED_RUNTIME_METHODS=\"[\''+ '\', \''.join(methods) +'\']\"'
+    cmd += ' -s EXPORTED_RUNTIME_METHODS=\"[\''+ '\', \''.join(methods) +'\']\"'
     cmd += ' -s ALLOW_MEMORY_GROWTH=1'
     cmd += ' -s MODULARIZE=1'
     cmd += ' -s WASM=0'
