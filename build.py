@@ -3,7 +3,7 @@
 # INFORMATION:
 # This scripts compiles the original Capstone framework to JavaScript
 
-from __future__ import print_function
+
 import os
 import re
 import sys
@@ -57,8 +57,8 @@ def generateConstants():
         path = os.path.join(CAPSTONE_DIR, path)
         with open(path, 'r') as f:
             code = f.read()
-            code = re.sub('\n([^#\t\r\n ])', '\ncs.\g<1>', code)
-            code = re.sub('(.* = [A-Za-z_])', '# \g<1>', code)
+            code = re.sub(r'\n([^#\t\r\n ])',  r'\ncs.\g<1>', code)
+            code = re.sub(r'(.* = [A-Za-z_])', r'# \g<1>', code)
             code = code.replace('#', '//')
         out.write(code)
     out.close()
@@ -71,14 +71,14 @@ def compileCapstone(targets):
         pass
 
     # CMake
-    cmd = 'cmake'
-    cmd += os.path.expandvars(' -DCMAKE_TOOLCHAIN_FILE=$EMSCRIPTEN/cmake/Modules/Platform/Emscripten.cmake')
+    cmd = 'emcmake cmake'
+    # cmd += os.path.expandvars(' -DCMAKE_TOOLCHAIN_FILE=$EMSCRIPTEN/cmake/Modules/Platform/Emscripten.cmake')
     cmd += ' -DCMAKE_BUILD_TYPE=Release'
     cmd += ' -DCMAKE_C_FLAGS=\"-Wno-warn-absolute-paths\"'
     cmd += ' -DCAPSTONE_BUILD_TESTS=OFF'
     cmd += ' -DCAPSTONE_BUILD_SHARED=OFF'
     if targets:
-        targets = map(lambda t: t.upper(), targets)
+        targets = [t.upper() for t in targets]
         for arch in AVAILABLE_TARGETS:
             if arch not in targets:
                 cmd += ' -DCAPSTONE_%s_SUPPORT=0' % arch
