@@ -24,7 +24,7 @@ EXPORTED_FUNCTIONS = [
     '_cs_support',
     '_cs_version',
     '_cs_strerror',
-    '_cs_disasm_ex',
+    '_cs_disasm',
     '_cs_disasm_iter',
     '_cs_malloc',
     '_cs_reg_read',
