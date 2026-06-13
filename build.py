@@ -78,10 +78,11 @@ def compileCapstone(targets):
 
     # CMake
     cmd = 'emcmake cmake'
-    # cmd += os.path.expandvars(' -DCMAKE_TOOLCHAIN_FILE=$EMSCRIPTEN/cmake/Modules/Platform/Emscripten.cmake')
+    cmd += ' -DCMAKE_TOOLCHAIN_FILE=/usr/lib/emscripten/cmake/Modules/Platform/Emscripten.cmake'
     cmd += ' -DCMAKE_BUILD_TYPE=Release'
-    cmd += ' -DCMAKE_C_FLAGS=\"-Wno-warn-absolute-paths\"'
+    cmd += ' -DCMAKE_C_FLAGS="-Wno-warn-absolute-paths"'
     cmd += ' -DCAPSTONE_BUILD_TESTS=OFF'
+    cmd += ' -DCAPSTONE_BUILD_STATIC_LIBS=ON'
     cmd += ' -DCAPSTONE_BUILD_SHARED=OFF'
     if targets:
         targets = [t.upper() for t in targets]
@@ -102,32 +103,32 @@ def compileCapstone(targets):
     if os.name == 'nt':
         make = 'mingw32-make'
     if os.name == 'posix':
-        make = 'make'
+        make = 'emmake make'
     if os.system(make) != 0:
         print("Make errored")
         sys.exit(1)
     os.chdir('..')
 
     # Compile static library to JavaScript
-    exports = EXPORTED_FUNCTIONS[:]
+    exports = EXPORTED_FUNCTIONS
     methods = [
         'ccall', 'getValue', 'setValue', 'writeArrayToMemory', 'UTF8ToString'
     ]
-    cmd = os.path.expandvars('emcc')
+    cmd = 'emcc'
     cmd += ' -Os'
     cmd += ' capstone/libcapstone.a'
     cmd += ' -s EXPORTED_FUNCTIONS=\"[\''+ '\', \''.join(exports) +'\']\"'
     cmd += ' -s EXPORTED_RUNTIME_METHODS=\"[\''+ '\', \''.join(methods) +'\']\"'
     cmd += ' -s ALLOW_MEMORY_GROWTH=1'
     cmd += ' -s MODULARIZE=1'
-    cmd += ' -s WASM=0'
+    cmd += ' -s WASM=2'
     cmd += ' -s EXPORT_NAME="\'MCapstone\'"'
     if targets:
         cmd += ' -o src/libcapstone-%s.out.js' % '-'.join(targets).lower()
     else:
         cmd += ' -o src/libcapstone.out.js'
     if os.system(cmd) != 0:
-        print("Emscripten errored")
+        print("Emscripten errored", cmd)
         sys.exit(1)
 
 
