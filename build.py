@@ -69,9 +69,11 @@ def generateConstants():
         path = os.path.join(CAPSTONE_DIR, path)
         with open(path, 'r') as f:
             code = f.read()
-            code = re.sub(r'\n([^#\t\r\n ])',  r'\ncs.\g<1>', code)
-            code = re.sub(r'(.* = [A-Za-z_])', r'# \g<1>', code)
-            code = code.replace('#', '//')
+            # replace python with js constructs
+            code = re.sub(r'\n([^#\t\r\n ])',  r'\ncs.\g<1>', code) # move variables to namespace
+            code = re.sub(r'(.* = [A-Za-z_])', r'# \g<1>', code)    # uncomment variable assignments (TODO right?)
+            code = code.replace('#', '//')                          # replace comments
+            code = code.replace('from . import', '// from . import') # ignore imports
         out.write(code)
     out.close()
 
@@ -127,7 +129,7 @@ def compileCapstone(targets):
     cmd += ' -s EXPORTED_RUNTIME_METHODS=\"[\''+ '\', \''.join(methods) +'\']\"'
     cmd += ' -s ALLOW_MEMORY_GROWTH=1'
     cmd += ' -s MODULARIZE=1'
-    cmd += ' -s WASM=2'
+    cmd += ' -s WASM=0'
     cmd += ' -s EXPORT_NAME="\'MCapstone\'"'
     if targets:
         cmd += ' -o src/libcapstone-%s.out.js' % '-'.join(targets).lower()
