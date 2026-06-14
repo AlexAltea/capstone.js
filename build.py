@@ -1,8 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # INFORMATION:
 # This scripts compiles the original Capstone framework to JavaScript
-
 
 import os
 import re
@@ -84,7 +83,6 @@ def compileCapstone(targets):
 
     # CMake
     cmd = 'emcmake cmake'
-    cmd += ' -DCMAKE_TOOLCHAIN_FILE=/usr/lib/emscripten/cmake/Modules/Platform/Emscripten.cmake'
     cmd += ' -DCMAKE_BUILD_TYPE=Release'
     cmd += ' -DCMAKE_C_FLAGS="-Wno-warn-absolute-paths"'
     cmd += ' -DCAPSTONE_BUILD_TESTS=OFF'
