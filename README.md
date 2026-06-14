@@ -6,17 +6,17 @@ Port of the [Capstone](https://github.com/aquynh/capstone) disassembler framewor
 **Notes:** _Capstone_ is a lightweight multi-architecture disassembly framework originally developed by Nguyen Anh Quynh and released under BSD license. More information about contributors and license terms can be found in the files `CREDITS.TXT` and `LICENSE.TXT` of the *capstone* submodule in this repository.
 
 ## Installation
+
 To add Capstone.js to your web application, include it with:
+
 ```html
 <script src="capstone.min.js"></script>
 ```
+
 or install it with the NPM command:
+
 ```bash
 npm install @alexaltea/capstone-js
-```
-or install it with the Bower command:
-```bash
-bower install capstonejs
 ```
 
 ## Usage                                                      
@@ -45,11 +45,12 @@ d.close();
 ```
 
 ## Building
+
 To build the Capstone.js library, clone the *master* branch of this repository, and do the following:
 
 1. Initialize the original Capstone submodule: `git submodule update --init`.
 
-2. Install the latest [Python 2.x (64-bit)](https://www.python.org/downloads/), [CMake](http://www.cmake.org/download/) and the [Emscripten SDK](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html). Follow the respective instructions and make sure all environment variables are configured correctly. Under Windows [MinGW](http://www.mingw.org/) (specifically *mingw32-make*) is required.
+2. Install the latest [Python 3.x](https://www.python.org/downloads/), [CMake](http://www.cmake.org/download/) and the [Emscripten SDK](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html). Follow the respective instructions and make sure all environment variables are configured correctly. Under Windows [MinGW](http://www.mingw.org/) (specifically *mingw32-make*) is required.
 
 3. Install the development dependencies with: `npm install`.
 
