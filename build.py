@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import zipfile
 
 # Directories
 CAPSTONE_DIR = os.path.abspath('capstone')
@@ -160,12 +162,16 @@ def constant_files(archs):
     return files
 
 
-def suffix_for(archs):
-    """Generates suffixes for the final bundle, e.g. '-x86' in capstone-x86.js."""
-    return ('_' + '+'.join(a.lower() for a in archs)) if archs else ''
+def package_build(suffix):
+    """Zip the .js/.wasm pair into dist/capstone{suffix}_{version}.zip."""
+    version = json.load(open('package.json'))['version']
+    zip_path = f'dist/capstone{suffix}_{version}.zip'
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for path in (f'dist/capstone{suffix}.js', f'dist/capstone{suffix}.wasm'):
+            zf.write(path, os.path.basename(path))
 
 
-def compileCapstone(archs=[], diet=False):
+def compileCapstone(archs=[], diet=False, package=False):
     archs = [a.upper() for a in archs]
     shutil.rmtree(CAPSTONE_BUILD_DIR, ignore_errors=True)
 
@@ -195,6 +201,7 @@ def compileCapstone(archs=[], diet=False):
     subprocess.run(cmd, check=True, cwd=CAPSTONE_BUILD_DIR)
 
     # Port the static library to JavaScript/WASM
+    suffix = ('_' + '+'.join(a.lower() for a in archs)) if archs else ''
     methods = [
         'ccall', 'getValue', 'setValue', 'writeArrayToMemory', 'UTF8ToString'
     ]
@@ -213,9 +220,11 @@ def compileCapstone(archs=[], diet=False):
     for path in constant_files(archs):
         cmd += ['--post-js', path]
     cmd += ['--post-js', 'src/capstone-wrapper.js']
-    cmd += ['-o', f'dist/capstone{suffix_for(archs)}.js']
+    cmd += ['-o', f'dist/capstone{suffix}.js']
     os.makedirs('dist', exist_ok=True)
     subprocess.run(cmd, check=True)
+    if package:
+        package_build(suffix)
 
 
 if __name__ == "__main__":
@@ -225,11 +234,12 @@ if __name__ == "__main__":
 
     args = sys.argv[1:]
     diet = '--diet' in args
+    package = '--package' in args
     generateConstants()
     if '--release' in args:
-        compileCapstone([], diet) # Build all
+        compileCapstone([], diet, package) # Build all
         for arch in AVAILABLE_ARCHITECTURES:
-            compileCapstone([arch], diet)
+            compileCapstone([arch], diet, package)
     else:
         archs = sorted([a for a in args if not a.startswith('--')])
-        compileCapstone(archs, diet)
+        compileCapstone(archs, diet, package)

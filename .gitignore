@@ -8,3 +8,6 @@ Makefile
 # Capstone.js arch-specific variants
 /dist/capstone_*.js
 /dist/capstone_*.wasm
+
+# Capstone.js packages
+*.zip
