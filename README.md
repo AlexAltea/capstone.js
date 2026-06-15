@@ -3,6 +3,8 @@ Capstone.js
 
 Port of the [Capstone](https://github.com/aquynh/capstone) disassembler framework for JavaScript/WASM. Powered by [Emscripten](https://github.com/emscripten-core/emscripten).
 
+**Requirements:** JavaScript environment with [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly) and [BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) support.
+
 **Notes:** _Capstone_ is a lightweight multi-architecture disassembly framework originally developed by Nguyen Anh Quynh and released under BSD license. More information about contributors and license terms can be found in the files `CREDITS.TXT` and `LICENSE.TXT` of the *capstone* submodule in this repository.
 
 ## Installation
@@ -49,18 +51,21 @@ MCapstone().then(function (cs) {
 
 ## Building
 
-To build the Capstone.js library, clone the *master* branch of this repository, and do the following:
+To build the Capstone.js library:
 
-1. Initialize the original Capstone submodule: `git submodule update --init`.
+1. Clone this repository including its submodules:
+    ```bash
+    git clone --recursive https://github.com/AlexAltea/capstone.js
+    ```
 
-2. Install the latest [Python 3.x](https://www.python.org/downloads/), [CMake](http://www.cmake.org/download/) and the [Emscripten SDK](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html). Follow the respective instructions and make sure all environment variables are configured correctly. Under Windows [MinGW](http://www.mingw.org/) (specifically *mingw32-make*) is required.
+2. Install the latest [Python 3.x](https://www.python.org/downloads/), [CMake](http://www.cmake.org/download/) and the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html). Follow the corresponding instructions and make sure all environment variables are configured correctly.
 
-3. Build the library with: `python3 build.py`. The output is written to `dist/`. Pass architecture names to produce a smaller, single-architecture bundle (e.g. `python3 build.py x86`), or `python3 build.py --release` to build every variant.
+3. Run the build script:
+   ```bash
+   python3 build.py
+   ```
 
-The build uses `WASM=2`: the bundle loads the `.wasm` binary when the browser supports it and transparently falls back to pure JavaScript otherwise. Because loading WebAssembly is asynchronous, wait for it before using Capstone:
+Build artifacts will be saved to [`dist`](./dist/).
 
-```javascript
-MCapstone().then((cs) => {
-    // ... initialize and use Capstone here ....
-});
-```
+> [!TIP]
+> Pass architecture names to produce a smaller, single-architecture bundle (e.g. `python3 build.py x86`), or `python3 build.py --release` to build every variant.

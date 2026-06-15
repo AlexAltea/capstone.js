@@ -3,14 +3,6 @@
  * Wrapper made by Alexandro Sanchez Bach.
  */
 
-// Read a 64-bit integer as a JS number. Emscripten's getValue('i64') now aborts
-// unless built with -sWASM_BIGINT, so combine the two 32-bit halves ourselves.
-function getValue64(ptr) {
-    var lo = Module.getValue(ptr, 'i32') >>> 0;
-    var hi = Module.getValue(ptr + 4, 'i32');
-    return hi * 0x100000000 + lo;
-}
-
 Object.assign(Module, {
     // Return codes
     ERR_OK: 0,         // No error: everything was fine
@@ -123,7 +115,7 @@ Object.assign(Module, {
         this.id = Module.getValue(pointer, 'i32');
 
         // Address (EIP) of this instruction
-        this.address = getValue64(pointer + 8);
+        this.address = Module.getValue(pointer + 8, 'i64');
 
         // Size of this instruction
         this.size = Module.getValue(pointer + 16, 'i16');
@@ -241,7 +233,7 @@ Object.assign(Module, {
                         op.reg = Module.getValue(op_addr + 28, 'i32');
                         break;
                     case Module.ARM64_OP_IMM:
-                        op.imm = getValue64(op_addr + 28);
+                        op.imm = Module.getValue(op_addr + 28, 'i64');
                         break;
                     case Module.ARM64_OP_FP:
                         op.fp = Module.getValue(op_addr + 28, 'double');
@@ -283,12 +275,12 @@ Object.assign(Module, {
                         op.reg = Module.getValue(op_addr + 4, 'i32');
                         break;
                     case Module.MIPS_OP_IMM:
-                        op.imm = getValue64(op_addr + 4);
+                        op.imm = Module.getValue(op_addr + 4, 'i64');
                         break;
                     case Module.MIPS_OP_MEM:
                         op.mem = {
                             base: Module.getValue(op_addr + 4, 'i32'),
-                            disp: getValue64(op_addr + 8),
+                            disp: Module.getValue(op_addr + 8, 'i64'),
                         };
                         break;
                     }
@@ -311,7 +303,7 @@ Object.assign(Module, {
                 detail.addr_size = Module.getValue(arch_info_addr + 0x09, 'i8');
                 detail.modrm = Module.getValue(arch_info_addr + 0x0A, 'i8');
                 detail.sib = Module.getValue(arch_info_addr + 0x0B, 'i8');
-                detail.disp = getValue64(arch_info_addr + 0x10);
+                detail.disp = Module.getValue(arch_info_addr + 0x10, 'i64');
                 detail.sib_index = Module.getValue(arch_info_addr + 0x18, 'i32');
                 detail.sib_scale = Module.getValue(arch_info_addr + 0x1C, 'i8');
                 detail.sib_base = Module.getValue(arch_info_addr + 0x20, 'i32');
@@ -320,8 +312,8 @@ Object.assign(Module, {
                 detail.avx_cc = Module.getValue(arch_info_addr + 0x2C, 'i32');
                 detail.avx_sae = Module.getValue(arch_info_addr + 0x30, 'i8');
                 detail.avx_rm = Module.getValue(arch_info_addr + 0x34, 'i32');
-                detail.eflags = getValue64(arch_info_addr + 0x38);
-                detail.fpu_flags = getValue64(arch_info_addr + 0x38);
+                detail.eflags = Module.getValue(arch_info_addr + 0x38, 'i64');
+                detail.fpu_flags = Module.getValue(arch_info_addr + 0x38, 'i64');
                 // Operands
                 var op_size = 48;
                 var op_count = Module.getValue(arch_info_addr + 0x40, 'i8');
@@ -334,7 +326,7 @@ Object.assign(Module, {
                         op.reg = Module.getValue(op_addr + 8, 'i32');
                         break;
                     case Module.X86_OP_IMM:
-                        op.imm = getValue64(op_addr + 8);
+                        op.imm = Module.getValue(op_addr + 8, 'i64');
                         break;
                     case Module.X86_OP_FP:
                         op.fp = Module.getValue(op_addr + 8, 'double');
@@ -345,7 +337,7 @@ Object.assign(Module, {
                             base:     Module.getValue(op_addr + 12, 'i32'),
                             index:    Module.getValue(op_addr + 16, 'i32'),
                             scale:    Module.getValue(op_addr + 20, 'i32'),
-                            disp:     getValue64(op_addr + 24),
+                            disp:     Module.getValue(op_addr + 24, 'i64'),
                         };
                         break;
                     }
@@ -442,8 +434,8 @@ Object.assign(Module, {
                         op.mem = {
                             base:   Module.getValue(op_addr +  4, 'i8'),
                             index:  Module.getValue(op_addr +  5, 'i8'),
-                            length: getValue64(op_addr +  8),
-                            disp:   getValue64(op_addr + 16),
+                            length: Module.getValue(op_addr +  8, 'i64'),
+                            disp:   Module.getValue(op_addr + 16, 'i64'),
                         };
                         break;
                     }
@@ -521,7 +513,7 @@ Object.assign(Module, {
 
             var count = Module.ccall('cs_disasm', 'number',
                 ['number', 'pointer', 'number', 'number', 'number', 'pointer'],
-                [handle, buffer_ptr, buffer_len, addr, 0, max || 0, insn_ptr_ptr]
+                [handle, buffer_ptr, buffer_len, BigInt(addr || 0), max || 0, insn_ptr_ptr]
             );
             if (count == 0 && buffer_len != 0) {
                 Module._free(insn_ptr_ptr);

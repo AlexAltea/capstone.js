@@ -147,7 +147,7 @@
                   <label for="offset" class="form-label">Offset</label>
                   <div class="input-group">
                     <span class="input-group-text">0x</span>
-                    <input type="text" id="offset" class="form-control" maxlength="12" placeholder="10000">
+                    <input type="text" id="offset" class="form-control" maxlength="16" placeholder="10000">
                   </div>
                 </div>
                 <div class="col-12">
@@ -251,11 +251,9 @@ MCapstone().then(function (cs) {
       // Highlight.JS
       hljs.initHighlightingOnLoad();
 
-      // Format a number as zero-padded uppercase hexadecimal (default width 8)
-      function hexadecimal(value, length) {
-        length = length || 8;
-        var str = '0000000000000000' + value.toString(16).toUpperCase();
-        return str.slice(-length);
+      // Format a Number/BigInt as a zero-padded uppercase hexadecimal
+      function hexadecimal(value, padding) {
+        return value.toString(16).toUpperCase().padStart(padding || 8, '0');
       }
 
       var elArchitecture = document.getElementById('architecture');
@@ -289,7 +287,8 @@ MCapstone().then(function (cs) {
         for (var i = 0; i < trimmedBuffer.length; i += 2) {
           csBuffer.push(parseInt(trimmedBuffer.substr(i, 2), 16));
         }
-        var offset = parseInt(elOffset.value, 16) || 0;
+        var hexOffset = elOffset.value.replace(/[^a-fA-F0-9]/g, '');
+        var offset = hexOffset ? BigInt('0x' + hexOffset) : 0n;
         var instructions = d.disasm(csBuffer, offset);
 
         elInstructions.textContent = '';

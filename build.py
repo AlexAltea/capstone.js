@@ -209,14 +209,15 @@ def compileCapstone(targets):
         '-s', f"EXPORTED_RUNTIME_METHODS={methods}",
         '-s', 'ALLOW_MEMORY_GROWTH=1',
         '-s', 'MODULARIZE=1',
-        '-s', 'WASM=2',
+        '-s', 'WASM=1',
+        '-s', 'WASM_BIGINT=1',
         '-s', "EXPORT_NAME='MCapstone'",
     ]
     for path in constant_files():
         cmd += ['--post-js', path]
     cmd += ['--post-js', 'src/capstone-wrapper.js']
-    os.makedirs('dist', exist_ok=True)
     cmd += ['-o', f'dist/capstone{suffix_for(targets)}.js']
+    os.makedirs('dist', exist_ok=True)
     subprocess.run(cmd, check=True)
 
 
