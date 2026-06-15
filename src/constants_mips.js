@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [mips.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   MIPS_OP_INVALID: 0,
   MIPS_OP_REG: 1,
   MIPS_OP_IMM: 2,

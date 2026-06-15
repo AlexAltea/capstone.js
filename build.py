@@ -2,13 +2,12 @@
 
 # INFORMATION:
 # This scripts compiles the original Capstone framework to JavaScript.
-# It is the single entry point for the build: it generates the JS constants,
-# compiles Capstone with Emscripten, and bundles the final dist artifact.
+# It is the single entry point for the build: it generates the JS constants and
+# compiles Capstone with Emscripten straight to the final dist/ artifact (the
+# constants and the JS wrapper are baked in via `--post-js`).
 
-import glob
 import os
 import re
-import shutil
 import sys
 
 EXPORTED_FUNCTIONS = [
@@ -91,8 +90,9 @@ def generateConstants():
 
     Each file is loaded into the module via Emscripten `--post-js` (see
     compileCapstone), so it runs with `Module` in scope and merges its constants
-    into `Module.constants`; capstone-wrapper.js copies those onto the public `cs`
-    object once the module is ready.
+    directly into the module. capstone-wrapper.js (also `--post-js`) then adds the
+    generic constants and the high-level API onto that same module, which becomes
+    the public `cs` object.
 
     Adapted from capstone/bindings/const_generator.py: it parses each arch
     header's `typedef enum` / `#define` constants and resolves every value to an
@@ -114,7 +114,7 @@ def generateConstants():
 
         out = open('src/constants_%s.js' % prefix, 'w')
         out.write('// AUTO-GENERATED, DO NOT EDIT [%s]\n' % header)
-        out.write('Object.assign(Module.constants || (Module.constants = {}), {\n')
+        out.write('Object.assign(Module, {\n')
         values = dict(CS_OP_SEED)  # running namespace for value resolution
         count = 0
         for line in open(os.path.join(INCLUDE_DIR, header)):
@@ -223,37 +223,12 @@ def compileCapstone(targets):
     cmd += ' -s EXPORT_NAME="\'MCapstone\'"'
     for path in constant_files():
         cmd += ' --post-js ' + path
-    if targets:
-        cmd += ' -o src/libcapstone-%s.out.js' % '-'.join(targets).lower()
-    else:
-        cmd += ' -o src/libcapstone.out.js'
+    cmd += ' --post-js src/capstone-wrapper.js'
+    os.makedirs('dist', exist_ok=True)
+    cmd += ' -o dist/capstone%s.js' % suffix_for(targets)
     if os.system(cmd) != 0:
         print("Emscripten errored", cmd)
         sys.exit(1)
-
-
-def bundle(suffix):
-    """Assemble the final dist artifact. Replaces the former Grunt concat+copy.
-
-    The per-arch constants are baked into libcapstone.out.js at compile time via
-    `--post-js` (see compileCapstone), so bundling only appends the wrapper:
-    libcapstone.out.js defines `MCapstone` and exposes `Module.constants`, and the
-    wrapper defines `var cs` and merges those constants into it.
-    """
-    parts = [
-        'src/libcapstone%s.out.js' % suffix,
-        'src/capstone-wrapper.js',
-    ]
-    os.makedirs('dist', exist_ok=True)
-    with open('dist/capstone%s.min.js' % suffix, 'w') as out:
-        for part in parts:
-            with open(part) as f:
-                out.write(f.read())
-            out.write('\n')
-    # The emitted .out.js references its .wasm by name, so keep the basenames.
-    for pattern in ("src/*.wasm", "src/*.wasm.js"):
-        for file in glob.glob(pattern):
-            shutil.copy(file, os.path.join('dist', os.path.basename(file)))
 
 
 def suffix_for(targets):
@@ -267,7 +242,7 @@ if __name__ == "__main__":
 
     if os.name not in ('nt', 'posix'):
         print("Your operating system is not supported by this script:")
-        print("Please, use Emscripten to compile Capstone manually to src/libcapstone.out.js")
+        print("Please, use Emscripten to compile Capstone manually to dist/capstone.js")
         sys.exit(1)
 
     args = sys.argv[1:]
@@ -275,8 +250,5 @@ if __name__ == "__main__":
     if '--release' in args:
         for targets in RELEASE_TARGETS:
             compileCapstone(targets)
-            bundle(suffix_for(targets))
     else:
-        targets = sorted(args)
-        compileCapstone(targets)
-        bundle(suffix_for(targets))
+        compileCapstone(sorted(args))

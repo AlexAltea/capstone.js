@@ -10,7 +10,7 @@ Port of the [Capstone](https://github.com/aquynh/capstone) disassembler framewor
 To add Capstone.js to your web application, include it with:
 
 ```html
-<script src="capstone.min.js"></script>
+<script src="capstone.js"></script>
 ```
 
 or install it with the NPM command:
@@ -25,8 +25,8 @@ npm install @alexaltea/capstone-js
 var buffer = [0x55, 0x31, 0xD2, 0x89, 0xE5, 0x8B, 0x45, 0x08];
 var offset = 0x10000;
 
-// WebAssembly loads asynchronously; wait for it before using Capstone
-cs.MCapstone.then(function () {
+// WebAssembly loads asynchronously; the resolved module is the Capstone API
+MCapstone().then(function (cs) {
     // Initialize the decoder
     var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_32);
 
@@ -60,7 +60,7 @@ To build the Capstone.js library, clone the *master* branch of this repository, 
 The build uses `WASM=2`: the bundle loads the `.wasm` binary when the browser supports it and transparently falls back to pure JavaScript otherwise. Because loading WebAssembly is asynchronous, wait for it before using Capstone:
 
 ```javascript
-cs.MCapstone.then(() => {
+MCapstone().then((cs) => {
     // ... initialize and use Capstone here ....
 });
 ```

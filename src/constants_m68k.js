@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [m68k.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   M68K_OPERAND_COUNT: 4,
   M68K_REG_INVALID: 0,
   M68K_REG_D0: 1,

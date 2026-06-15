@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [arm64.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   ARM64_SFT_INVALID: 0,
   ARM64_SFT_LSL: 1,
   ARM64_SFT_MSL: 2,

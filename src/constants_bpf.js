@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [bpf.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   BPF_OP_INVALID: 0,
   BPF_OP_REG: 1,
   BPF_OP_IMM: 2,

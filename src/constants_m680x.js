@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [m680x.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   M680X_OPERAND_COUNT: 9,
   M680X_REG_INVALID: 0,
   M680X_REG_A: 1,

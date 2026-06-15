@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [systemz.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   SYSZ_CC_INVALID: 0,
   SYSZ_CC_O: 1,
   SYSZ_CC_H: 2,

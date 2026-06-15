@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [wasm.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   WASM_OP_INVALID: 0,
   WASM_OP_NONE: 1,
   WASM_OP_INT7: 2,

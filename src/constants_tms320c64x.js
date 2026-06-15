@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [tms320c64x.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   TMS320C64X_OP_INVALID: 0,
   TMS320C64X_OP_REG: 1,
   TMS320C64X_OP_IMM: 2,

@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [sparc.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   SPARC_CC_INVALID: 0,
   SPARC_CC_ICC_A: 264,
   SPARC_CC_ICC_N: 256,

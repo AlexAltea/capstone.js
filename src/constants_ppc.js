@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [ppc.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   PPC_BC_INVALID: 0,
   PPC_BC_LT: 12,
   PPC_BC_LE: 36,

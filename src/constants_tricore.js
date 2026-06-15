@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [tricore.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   TRICORE_OP_INVALID: 0,
   TRICORE_OP_REG: 1,
   TRICORE_OP_IMM: 2,

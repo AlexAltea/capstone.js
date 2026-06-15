@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [riscv.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   RISCV_OP_INVALID: 0,
   RISCV_OP_REG: 1,
   RISCV_OP_IMM: 2,

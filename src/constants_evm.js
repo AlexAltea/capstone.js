@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [evm.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   EVM_INS_STOP: 0,
   EVM_INS_ADD: 1,
   EVM_INS_MUL: 2,

@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [mos65xx.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   MOS65XX_REG_INVALID: 0,
   MOS65XX_REG_ACC: 1,
   MOS65XX_REG_X: 2,

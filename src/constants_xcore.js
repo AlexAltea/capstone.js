@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [xcore.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   XCORE_OP_INVALID: 0,
   XCORE_OP_REG: 1,
   XCORE_OP_IMM: 2,

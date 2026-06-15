@@ -191,7 +191,7 @@
 
           <h2>Installation</h2>
           <p>To use the Capstone.js in your web application, download and include it with:</p>
-          <p><pre><code>&lt;script src="capstone.min.js"&gt;&lt;/script&gt;</code></pre></p>
+          <p><pre><code>&lt;script src="capstone.js"&gt;&lt;/script&gt;</code></pre></p>
         </div>
         <div class="col-md-6">
           <h2>Tutorial</h2>
@@ -200,23 +200,26 @@
 var buffer = [0x55, 0x31, 0xD2, 0x89, 0xE5, 0x8B, 0x45, 0x08];
 var offset = 0x10000;
 
-// Initialize the decoder
-var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_32);
+// WebAssembly loads asynchronously; the resolved module is the Capstone API
+MCapstone().then(function (cs) {
+    // Initialize the decoder
+    var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_32);
 
-// Output: Array of cs.Instruction objects
-var instructions = d.disasm(buffer, offset);
+    // Output: Array of cs.Instruction objects
+    var instructions = d.disasm(buffer, offset);
 
-// Display results;
-instructions.forEach(function (instr) {
-    console.log("0x%s:\t%s\t%s",
-        instr.address.toString(16),
-        instr.mnemonic,
-        instr.op_str
-    );
-});
+    // Display results;
+    instructions.forEach(function (instr) {
+        console.log("0x%s:\t%s\t%s",
+            instr.address.toString(16),
+            instr.mnemonic,
+            instr.op_str
+        );
+    });
 
-// Delete decoder
-d.close();</code></pre>
+    // Delete decoder
+    d.close();
+});</code></pre>
           </p>
         </div>
       </div>
@@ -241,7 +244,7 @@ d.close();</code></pre>
             integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
     <!-- CapstoneJS -->
-    <script src="dist/capstone.min.js"></script>
+    <script src="dist/capstone.js"></script>
 
     <!-- Simple demo of CapstoneJS -->
     <script>
@@ -263,7 +266,9 @@ d.close();</code></pre>
       var elInstructions = document.getElementById('instructions');
       var elConfigError  = document.getElementById('config-error');
 
-      // Active disassembler; recreated when architecture/endianness/mode change
+      // The resolved Capstone module (set once WebAssembly finishes loading) and
+      // the active disassembler (recreated when architecture/endianness/mode change)
+      var cs = null;
       var d = null;
 
       function capstoneConfigure() {
@@ -305,15 +310,16 @@ d.close();</code></pre>
         tr.appendChild(td);
       }
 
-      // Initial state
-      elArchitecture.value = cs.ARCH_X86;
-      elEndianness.value   = cs.MODE_LITTLE_ENDIAN;
-      elMode.value         = cs.MODE_64;
-      elOffset.value       = "10000";
-      elBuffer.value       = "55 31 D2 89 E5 8B 45 08";
+      // Static initial state
+      elOffset.value = "10000";
+      elBuffer.value = "55 31 D2 89 E5 8B 45 08";
 
-      // WebAssembly loads asynchronously
-      cs.MCapstone.then(function () {
+      // WebAssembly loads asynchronously; the resolved module is the Capstone API
+      MCapstone().then(function (module) {
+        cs = module;
+        elArchitecture.value = cs.ARCH_X86;
+        elEndianness.value   = cs.MODE_LITTLE_ENDIAN;
+        elMode.value         = cs.MODE_64;
         // Architectural changes require rebuilding the disassembler
         [elArchitecture, elEndianness, elMode].forEach(function (el) {
           el.addEventListener('change', function () {

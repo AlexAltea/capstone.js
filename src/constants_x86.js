@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [x86.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   X86_REG_INVALID: 0,
   X86_REG_AH: 1,
   X86_REG_AL: 2,

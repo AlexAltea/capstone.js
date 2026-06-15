@@ -1,5 +1,5 @@
 // AUTO-GENERATED, DO NOT EDIT [sh.h]
-Object.assign(Module.constants || (Module.constants = {}), {
+Object.assign(Module, {
   SH_REG_INVALID: 0,
   SH_REG_R0: 1,
   SH_REG_R1: 2,
