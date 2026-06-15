@@ -5,10 +5,5 @@ Makefile
 *.cmake
 *.pc
 
-# Emscripten builds
-/src/*.out.js
-/src/*.out.wasm
-/src/*.out.wasm.js
-
 # Capstone.js
 /dist/capstone-*.js

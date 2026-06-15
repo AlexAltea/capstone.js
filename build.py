@@ -27,13 +27,13 @@ EXPORTED_FUNCTIONS = [
     '_cs_support',
     '_cs_version',
     '_cs_strerror',
-    '_cs_disasm',
     '_cs_disasm_iter',
     '_cs_malloc',
     '_cs_reg_read',
     '_cs_reg_write',
     '_cs_op_count',
     '_cs_op_index',
+    '_cs_regs_access',
 ]
 
 AVAILABLE_TARGETS = [
