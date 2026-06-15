@@ -113,8 +113,8 @@ def generateConstants():
                 return any(token.startswith(p) for p in prefixes)
             return token.startswith(prefix.upper())
 
-        out = open('src/constants_%s.js' % prefix, 'w')
-        out.write('// AUTO-GENERATED, DO NOT EDIT [%s]\n' % header)
+        out = open(f'src/constants_{prefix}.js', 'w')
+        out.write(f'// AUTO-GENERATED, DO NOT EDIT [{header}]\n')
         out.write('Object.assign(Module, {\n')
         values = dict(CS_OP_SEED)  # running namespace for value resolution
         count = 0
@@ -153,8 +153,8 @@ def generateConstants():
                     pass
                 name = fields[0].strip()
                 value = eval(rhs, None, values)       # resolve to integer
-                exec('%s = %d' % (name, value), None, values)
-                out.write('  %s: %d,\n' % (name, value))
+                exec(f'{name} = {value}', None, values)
+                out.write(f'  {name}: {value},\n')
         out.write('});\n')
         out.close()
 
@@ -165,7 +165,7 @@ def constant_files():
     for header, prefix in CONST_HEADERS:
         if isinstance(prefix, list):
             prefix = prefix[0].lower()
-        files.append('src/constants_%s.js' % prefix)
+        files.append(f'src/constants_{prefix}.js')
     return files
 
 
@@ -189,14 +189,15 @@ def compileCapstone(targets):
         targets = [t.upper() for t in targets]
         for arch in AVAILABLE_TARGETS:
             if arch not in targets:
-                cmd.append('-DCAPSTONE_%s_SUPPORT=0' % arch)
+                cmd.append(f'-DCAPSTONE_{arch}_SUPPORT=0')
     cmd += ['-G', 'Unix Makefiles', 'capstone/CMakeLists.txt']
     subprocess.run(cmd, check=True)
 
     # Build the static library
-    subprocess.run(['emmake', 'make'], check=True, cwd='capstone')
+    cmd = ['emmake', 'make']
+    subprocess.run(cmd, check=True, cwd='capstone')
 
-    # Compile the static library to JavaScript
+    # Port the static library to JavaScript/WASM
     methods = [
         'ccall', 'getValue', 'setValue', 'writeArrayToMemory', 'UTF8ToString'
     ]
@@ -204,8 +205,8 @@ def compileCapstone(targets):
         'emcc',
         '-Os',
         'capstone/libcapstone.a',
-        '-s', "EXPORTED_FUNCTIONS=[%s]" % ', '.join("'%s'" % f for f in EXPORTED_FUNCTIONS),
-        '-s', "EXPORTED_RUNTIME_METHODS=[%s]" % ', '.join("'%s'" % m for m in methods),
+        '-s', f"EXPORTED_FUNCTIONS={EXPORTED_FUNCTIONS}",
+        '-s', f"EXPORTED_RUNTIME_METHODS={methods}",
         '-s', 'ALLOW_MEMORY_GROWTH=1',
         '-s', 'MODULARIZE=1',
         '-s', 'WASM=2',
@@ -215,7 +216,7 @@ def compileCapstone(targets):
         cmd += ['--post-js', path]
     cmd += ['--post-js', 'src/capstone-wrapper.js']
     os.makedirs('dist', exist_ok=True)
-    cmd += ['-o', 'dist/capstone%s.js' % suffix_for(targets)]
+    cmd += ['-o', f'dist/capstone{suffix_for(targets)}.js']
     subprocess.run(cmd, check=True)
 
 
