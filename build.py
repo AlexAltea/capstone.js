@@ -87,16 +87,20 @@ INCLUDE_DIR = os.path.join(CAPSTONE_DIR, 'include', 'capstone')
 
 
 def generateConstants():
-    """Generate src/capstone-constants.js from Capstone's C headers.
+    """Generate src/constants_<arch>.js from Capstone's C headers (one per header).
+
+    Each file is loaded into the module via Emscripten `--post-js` (see
+    compileCapstone), so it runs with `Module` in scope and merges its constants
+    into `Module.constants`; capstone-wrapper.js copies those onto the public `cs`
+    object once the module is ready.
 
     Adapted from capstone/bindings/const_generator.py: it parses each arch
     header's `typedef enum` / `#define` constants and resolves every value to an
     integer (mirroring that script's `swift` branch). Resolving means aliases
     such as `ARM_REG_FP = ARM_REG_R11` and expressions such as `(1ULL << 3)`
-    collapse into plain integer literals, valid as `cs.NAME = <int>;`. This is
-    immune to the textual quirks of Capstone's pre-generated Python bindings.
+    collapse into plain integer literals. This is immune to the textual quirks
+    of Capstone's pre-generated Python bindings.
     """
-    out = open('src/capstone-constants.js', 'w')
     for header, prefix in CONST_HEADERS:
         prefixes = []
         if isinstance(prefix, list):
@@ -108,7 +112,9 @@ def generateConstants():
                 return any(token.startswith(p) for p in prefixes)
             return token.startswith(prefix.upper())
 
+        out = open('src/constants_%s.js' % prefix, 'w')
         out.write('// AUTO-GENERATED, DO NOT EDIT [%s]\n' % header)
+        out.write('Object.assign(Module.constants || (Module.constants = {}), {\n')
         values = dict(CS_OP_SEED)  # running namespace for value resolution
         count = 0
         for line in open(os.path.join(INCLUDE_DIR, header)):
@@ -147,8 +153,19 @@ def generateConstants():
                 name = fields[0].strip()
                 value = eval(rhs, None, values)       # resolve to integer
                 exec('%s = %d' % (name, value), None, values)
-                out.write('cs.%s = %d;\n' % (name, value))
-    out.close()
+                out.write('  %s: %d,\n' % (name, value))
+        out.write('});\n')
+        out.close()
+
+
+def constant_files():
+    """Per-arch constants files from generateConstants(), loaded via --post-js."""
+    files = []
+    for header, prefix in CONST_HEADERS:
+        if isinstance(prefix, list):
+            prefix = prefix[0].lower()
+        files.append('src/constants_%s.js' % prefix)
+    return files
 
 
 def compileCapstone(targets):
@@ -204,6 +221,8 @@ def compileCapstone(targets):
     cmd += ' -s MODULARIZE=1'
     cmd += ' -s WASM=2'
     cmd += ' -s EXPORT_NAME="\'MCapstone\'"'
+    for path in constant_files():
+        cmd += ' --post-js ' + path
     if targets:
         cmd += ' -o src/libcapstone-%s.out.js' % '-'.join(targets).lower()
     else:
@@ -216,14 +235,14 @@ def compileCapstone(targets):
 def bundle(suffix):
     """Assemble the final dist artifact. Replaces the former Grunt concat+copy.
 
-    Concatenation order matters: libcapstone.out.js defines `MCapstone` (used by
-    the wrapper's `MCapstone = MCapstone()`), the wrapper defines `var cs`, and
-    the constants append `cs.X = ...` onto it.
+    The per-arch constants are baked into libcapstone.out.js at compile time via
+    `--post-js` (see compileCapstone), so bundling only appends the wrapper:
+    libcapstone.out.js defines `MCapstone` and exposes `Module.constants`, and the
+    wrapper defines `var cs` and merges those constants into it.
     """
     parts = [
         'src/libcapstone%s.out.js' % suffix,
         'src/capstone-wrapper.js',
-        'src/capstone-constants.js',
     ]
     os.makedirs('dist', exist_ok=True)
     with open('dist/capstone%s.min.js' % suffix, 'w') as out:

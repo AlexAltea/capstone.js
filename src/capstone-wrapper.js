@@ -4,9 +4,13 @@
  */
 
 // Emscripten's MODULARIZE factory returns a Promise resolving to the module.
-// Rebind `MCapstone` to the module once ready; `cs.MCapstone` is the promise to
-// await (e.g. `cs.MCapstone.then(...)`) before disassembling.
-var MCapstoneReady = MCapstone().then(function (module) { MCapstone = module; });
+// Rebind `MCapstone` to the module once ready, and copy the per-arch constants
+// it carries (gathered into `Module.constants` by the --post-js constant files)
+// onto `cs`. `cs.MCapstone` is the promise to await before disassembling.
+var MCapstoneReady = MCapstone().then(function (module) {
+    MCapstone = module;
+    Object.assign(cs, module.constants);
+});
 
 // Read a 64-bit integer as a JS number. Emscripten's getValue('i64') now aborts
 // unless built with -sWASM_BIGINT, so combine the two 32-bit halves ourselves.
