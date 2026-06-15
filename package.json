@@ -1,13 +1,27 @@
 {
   "name": "@alexaltea/capstone-js",
-  "version": "3.0.5",
+  "version": "5.0.9",
   "description": "Capstone disassembler framework port for JavaScript",
   "author": "Alexandro Sanchez Bach <alexaltea123@gmail.com>",
+  "license": "BSD-3-Clause",
+  "homepage": "http://alexaltea.github.io/capstone.js/",
+  "keywords": [
+    "capstone",
+    "disassembler",
+    "disassembly",
+    "wasm",
+    "webassembly",
+    "reverse-engineering"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/AlexAltea/capstone.js.git"
   },
   "main": "./dist/capstone.js",
+  "files": [
+    "dist/capstone.js",
+    "dist/capstone.wasm"
+  ],
   "scripts": {
     "build": "python3 build.py",
     "serve": "python3 -m http.server"
