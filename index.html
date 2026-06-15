@@ -256,72 +256,69 @@ MCapstone().then(function (cs) {
         return value.toString(16).toUpperCase().padStart(padding || 8, '0');
       }
 
-      var elArchitecture = document.getElementById('architecture');
-      var elEndianness   = document.getElementById('endianness');
-      var elMode         = document.getElementById('mode');
-      var elOffset       = document.getElementById('offset');
-      var elBuffer       = document.getElementById('buffer');
-      var elInstructions = document.getElementById('instructions');
-      var elConfigError  = document.getElementById('config-error');
-
-      // The resolved Capstone module (set once WebAssembly finishes loading) and
-      // the active disassembler (recreated when architecture/endianness/mode change)
-      var cs = null;
-      var d = null;
-
-      function capstoneConfigure() {
-        if (d) {
-          d.close();
-        }
-        var arch = parseInt(elArchitecture.value, 10);
-        var mode = parseInt(elEndianness.value, 10) | parseInt(elMode.value, 10);
-        d = new cs.Capstone(arch, mode);
-      }
-
-      function capstoneRender() {
-        var trimmedBuffer = elBuffer.value.replace(/[^a-fA-F0-9]/g, '');
-        if (trimmedBuffer.length % 2 != 0) {
-          return;
-        }
-        var csBuffer = [];
-        for (var i = 0; i < trimmedBuffer.length; i += 2) {
-          csBuffer.push(parseInt(trimmedBuffer.substr(i, 2), 16));
-        }
-        var hexOffset = elOffset.value.replace(/[^a-fA-F0-9]/g, '');
-        var offset = hexOffset ? BigInt('0x' + hexOffset) : 0n;
-        var instructions = d.disasm(csBuffer, offset);
-
-        elInstructions.textContent = '';
-        instructions.forEach(function (instr) {
-          var bytes = instr.bytes.map(function (b) { return hexadecimal(b, 2); }).join(' ');
-          var tr = document.createElement('tr');
-          appendCell(tr, hexadecimal(instr.address));
-          appendCell(tr, bytes);
-          appendCell(tr, instr.mnemonic);
-          appendCell(tr, instr.op_str);
-          elInstructions.appendChild(tr);
-        });
-      }
-
       function appendCell(tr, text) {
         var td = document.createElement('td');
         td.textContent = text;
         tr.appendChild(td);
       }
 
+      const elArchitecture = document.getElementById('architecture');
+      const elEndianness   = document.getElementById('endianness');
+      const elMode         = document.getElementById('mode');
+      const elOffset       = document.getElementById('offset');
+      const elBuffer       = document.getElementById('buffer');
+      const elInstructions = document.getElementById('instructions');
+      const elConfigError  = document.getElementById('config-error');
+
       // Static initial state
       elOffset.value = "10000";
       elBuffer.value = "55 31 D2 89 E5 8B 45 08";
 
       // WebAssembly loads asynchronously; the resolved module is the Capstone API
-      MCapstone().then(function (module) {
-        cs = module;
+      MCapstone().then((cs) => {
+        // Active disassembler, recreated when architecture/endianness/mode change
+        let d = null;
+
+        function capstoneConfigure() {
+          if (d) {
+            d.close();
+          }
+          const arch = parseInt(elArchitecture.value, 10);
+          const mode = parseInt(elEndianness.value, 10) | parseInt(elMode.value, 10);
+          d = new cs.Capstone(arch, mode);
+        };
+
+        function capstoneRender() {
+          const trimmedBuffer = elBuffer.value.replace(/[^a-fA-F0-9]/g, '');
+          if (trimmedBuffer.length % 2 !== 0) {
+            return;
+          }
+          const csBuffer = [];
+          for (let i = 0; i < trimmedBuffer.length; i += 2) {
+            csBuffer.push(parseInt(trimmedBuffer.slice(i, i + 2), 16));
+          }
+          const hexOffset = elOffset.value.replace(/[^a-fA-F0-9]/g, '');
+          const offset = hexOffset ? BigInt('0x' + hexOffset) : 0n;
+          const instructions = d.disasm(csBuffer, offset);
+
+          elInstructions.textContent = '';
+          instructions.forEach((instr) => {
+            const bytes = instr.bytes.map((b) => hexadecimal(b, 2)).join(' ');
+            const tr = document.createElement('tr');
+            appendCell(tr, hexadecimal(instr.address));
+            appendCell(tr, bytes);
+            appendCell(tr, instr.mnemonic);
+            appendCell(tr, instr.op_str);
+            elInstructions.appendChild(tr);
+          });
+        };
+
         elArchitecture.value = cs.ARCH_X86;
         elEndianness.value   = cs.MODE_LITTLE_ENDIAN;
         elMode.value         = cs.MODE_64;
         // Architectural changes require rebuilding the disassembler
-        [elArchitecture, elEndianness, elMode].forEach(function (el) {
-          el.addEventListener('change', function () {
+        [elArchitecture, elEndianness, elMode].forEach((el) => {
+          el.addEventListener('change', () => {
             capstoneConfigure();
             capstoneRender();
           });

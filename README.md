@@ -27,16 +27,15 @@ npm install @alexaltea/capstone-js
 var buffer = [0x55, 0x31, 0xD2, 0x89, 0xE5, 0x8B, 0x45, 0x08];
 var offset = 0x10000;
 
-// WebAssembly loads asynchronously; the resolved module is the Capstone API
-MCapstone().then(function (cs) {
+MCapstone().then((cs) => {
     // Initialize the decoder
     var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_32);
 
     // Output: Array of cs.Instruction objects
     var instructions = d.disasm(buffer, offset);
 
-    // Display results;
-    instructions.forEach(function (instr) {
+    // Display results
+    instructions.forEach((instr) => {
         console.log("0x%s:\t%s\t%s",
             instr.address.toString(16),
             instr.mnemonic,
