@@ -1,52 +1,45 @@
 #!/usr/bin/env python3
 
-# INFORMATION:
-# This scripts compiles the original Capstone framework to JavaScript.
-# It is the single entry point for the build: it generates the JS constants and
-# compiles Capstone with Emscripten straight to the final dist/ artifact (the
-# constants and the JS wrapper are baked in via `--post-js`).
-
 import os
 import re
+import shutil
 import subprocess
 import sys
 
+# Directories
+CAPSTONE_DIR = os.path.abspath('capstone')
+CAPSTONE_BUILD_DIR = os.path.join(CAPSTONE_DIR, 'build')
+CAPSTONE_INCLUDE_DIR = os.path.join(CAPSTONE_DIR, 'include', 'capstone')
+
 EXPORTED_FUNCTIONS = [
-    '_malloc',
-    '_free',
-    '_cs_open',
-    '_cs_disasm',
-    '_cs_free',
     '_cs_close',
-    '_cs_option',
-    '_cs_group_name',
-    '_cs_insn_name',
-    '_cs_insn_group',
-    '_cs_reg_name',
-    '_cs_errno',
-    '_cs_support',
-    '_cs_version',
-    '_cs_strerror',
     '_cs_disasm_iter',
+    '_cs_disasm',
+    '_cs_errno',
+    '_cs_free',
+    '_cs_group_name',
+    '_cs_insn_group',
+    '_cs_insn_name',
     '_cs_malloc',
-    '_cs_reg_read',
-    '_cs_reg_write',
     '_cs_op_count',
     '_cs_op_index',
+    '_cs_open',
+    '_cs_option',
+    '_cs_reg_name',
+    '_cs_reg_read',
+    '_cs_reg_write',
     '_cs_regs_access',
+    '_cs_strerror',
+    '_cs_support',
+    '_cs_version',
+    '_free',
+    '_malloc',
 ]
 
-AVAILABLE_TARGETS = [
-    'ARM', 'ARM64', 'MIPS', 'PPC', 'SPARC', 'SYSZ', 'XCORE', 'X86',
-    'M68K', 'TMS320C64X', 'M680X', 'EVM', 'MOS65XX', 'WASM', 'BPF',
-    'RISCV', 'SH', 'TRICORE'
-]
-
-# Architectures built as standalone bundles by `--release` (mirrors the
-# previous Grunt `release` task: the combined build plus one bundle per arch).
-RELEASE_TARGETS = [
-    [], ['arm'], ['arm64'], ['mips'], ['ppc'],
-    ['sparc'], ['sysz'], ['x86'], ['xcore'],
+AVAILABLE_ARCHITECTURES = [
+    'ARM', 'ARM64', 'BPF', 'EVM', 'M680X', 'M68K', 'MIPS', 'MOS65XX',
+    'PPC', 'RISCV', 'SH', 'SPARC', 'SYSZ', 'TMS320C64X', 'TRICORE',
+    'WASM', 'X86', 'XCORE'
 ]
 
 # Capstone headers and the constant prefix(es) to export from each. Taken from
@@ -81,11 +74,6 @@ CS_OP_SEED = {
 
 MARKUP = '//>'
 
-# Directories
-CAPSTONE_DIR = os.path.abspath("capstone")
-INCLUDE_DIR = os.path.join(CAPSTONE_DIR, 'include', 'capstone')
-
-
 def generateConstants():
     """Generate src/constants_<arch>.js from Capstone's C headers (one per header).
 
@@ -118,7 +106,7 @@ def generateConstants():
         out.write('Object.assign(Module, {\n')
         values = dict(CS_OP_SEED)  # running namespace for value resolution
         count = 0
-        for line in open(os.path.join(INCLUDE_DIR, header)):
+        for line in open(os.path.join(CAPSTONE_INCLUDE_DIR, header)):
             line = line.strip()
             if line.startswith(MARKUP) or line == '' or line.startswith('//'):
                 continue
@@ -159,43 +147,50 @@ def generateConstants():
         out.close()
 
 
-def constant_files():
+def constant_files(archs):
     """Per-arch constants files from generateConstants(), loaded via --post-js."""
+    wanted = {a.lower() for a in archs} if archs else None
     files = []
     for header, prefix in CONST_HEADERS:
         if isinstance(prefix, list):
             prefix = prefix[0].lower()
+        if wanted and prefix not in wanted:
+            continue
         files.append(f'src/constants_{prefix}.js')
     return files
 
 
-def compileCapstone(targets):
-    # Clean CMake cache
-    try:
-        os.remove('capstone/CMakeCache.txt')
-    except OSError:
-        pass
+def suffix_for(archs):
+    """Generates suffixes for the final bundle, e.g. '-x86' in capstone-x86.js."""
+    return ('_' + '+'.join(a.lower() for a in archs)) if archs else ''
+
+
+def compileCapstone(archs=[], diet=False):
+    archs = [a.upper() for a in archs]
+    shutil.rmtree(CAPSTONE_BUILD_DIR, ignore_errors=True)
 
     # Configure with CMake
     cmd = [
         'emcmake', 'cmake',
+        '-S', CAPSTONE_DIR,
+        '-B', CAPSTONE_BUILD_DIR,
+        '-G', 'Unix Makefiles',
         '-DCMAKE_BUILD_TYPE=Release',
         '-DCMAKE_C_FLAGS=-Wno-warn-absolute-paths',
-        '-DCAPSTONE_BUILD_TESTS=OFF',
         '-DCAPSTONE_BUILD_STATIC_LIBS=ON',
-        '-DCAPSTONE_BUILD_SHARED=OFF',
+        '-DCAPSTONE_BUILD_SHARED_LIBS=OFF',
+        '-DCAPSTONE_BUILD_TESTS=OFF',
+        '-DCAPSTONE_BUILD_CSTOOL=OFF',
     ]
-    if targets:
-        targets = [t.upper() for t in targets]
-        for arch in AVAILABLE_TARGETS:
-            if arch not in targets:
-                cmd.append(f'-DCAPSTONE_{arch}_SUPPORT=0')
-    cmd += ['-G', 'Unix Makefiles', 'capstone/CMakeLists.txt']
+    for a in AVAILABLE_ARCHITECTURES:
+        if archs and a not in archs:
+            cmd.append(f'-DCAPSTONE_{a}_SUPPORT=0')
     subprocess.run(cmd, check=True)
 
     # Build the static library
-    cmd = ['emmake', 'make']
-    subprocess.run(cmd, check=True, cwd='capstone')
+    jobs = os.cpu_count() or 1
+    cmd = ['emmake', 'make', f'-j{jobs}']
+    subprocess.run(cmd, check=True, cwd=CAPSTONE_BUILD_DIR)
 
     # Port the static library to JavaScript/WASM
     methods = [
@@ -204,7 +199,7 @@ def compileCapstone(targets):
     cmd = [
         'emcc',
         '-Os',
-        'capstone/libcapstone.a',
+        os.path.join(CAPSTONE_BUILD_DIR, 'libcapstone.a'),
         '-s', f"EXPORTED_FUNCTIONS={EXPORTED_FUNCTIONS}",
         '-s', f"EXPORTED_RUNTIME_METHODS={methods}",
         '-s', 'ALLOW_MEMORY_GROWTH=1',
@@ -213,16 +208,12 @@ def compileCapstone(targets):
         '-s', 'WASM_BIGINT=1',
         '-s', "EXPORT_NAME='MCapstone'",
     ]
-    for path in constant_files():
+    for path in constant_files(archs):
         cmd += ['--post-js', path]
     cmd += ['--post-js', 'src/capstone-wrapper.js']
-    cmd += ['-o', f'dist/capstone{suffix_for(targets)}.js']
+    cmd += ['-o', f'dist/capstone{suffix_for(archs)}.js']
     os.makedirs('dist', exist_ok=True)
     subprocess.run(cmd, check=True)
-
-
-def suffix_for(targets):
-    return ('-' + '-'.join(t.lower() for t in targets)) if targets else ''
 
 
 if __name__ == "__main__":
@@ -231,9 +222,12 @@ if __name__ == "__main__":
         os.system("git submodule update --init")
 
     args = sys.argv[1:]
+    diet = '--diet' in args
     generateConstants()
     if '--release' in args:
-        for targets in RELEASE_TARGETS:
-            compileCapstone(targets)
+        compileCapstone([], diet) # Build all
+        for arch in AVAILABLE_ARCHITECTURES:
+            compileCapstone([arch], diet)
     else:
-        compileCapstone(sorted(args))
+        archs = sorted([a for a in args if not a.startswith('--')])
+        compileCapstone(archs, diet)
