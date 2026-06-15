@@ -8,16 +8,9 @@
     "url": "https://github.com/AlexAltea/capstone.js.git"
   },
   "main": "./dist/capstone.min.js",
-  "dependencies": {},
-  "devDependencies": {
-    "grunt": "^1.5.2",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-connect": "^3.0.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-exec": "~0.4.6",
-    "load-grunt-tasks": "^5.1.0",
-    "time-grunt": "^1.0.0"
+  "scripts": {
+    "build": "python3 build.py",
+    "serve": "python3 -m http.server"
   },
   "bugs": {
     "url": "https://github.com/AlexAltea/capstone.js/issues"

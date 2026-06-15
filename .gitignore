@@ -1,9 +1,14 @@
-# Dependencies NodeJS
-node_modules/
-debug.log
+# CMake
+CMakeCache.txt
+CMakeFiles
+Makefile
+*.cmake
+*.pc
 
 # Emscripten builds
-*.out.js
+/src/*.out.js
+/src/*.out.wasm
+/src/*.out.wasm.js
 
 # Capstone.js
 /dist/capstone-*.js

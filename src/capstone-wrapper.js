@@ -3,11 +3,21 @@
  * Wrapper made by Alexandro Sanchez Bach.
  */
 
-// Emscripten demodularize
-MCapstone = MCapstone();
+// Emscripten's MODULARIZE factory returns a Promise resolving to the module.
+// Rebind `MCapstone` to the module once ready; `cs.MCapstone` is the promise to
+// await (e.g. `cs.MCapstone.then(...)`) before disassembling.
+var MCapstoneReady = MCapstone().then(function (module) { MCapstone = module; });
+
+// Read a 64-bit integer as a JS number. Emscripten's getValue('i64') now aborts
+// unless built with -sWASM_BIGINT, so combine the two 32-bit halves ourselves.
+function getValue64(ptr) {
+    var lo = MCapstone.getValue(ptr, 'i32') >>> 0;
+    var hi = MCapstone.getValue(ptr + 4, 'i32');
+    return hi * 0x100000000 + lo;
+}
 
 var cs = {
-    MCapstone: MCapstone,
+    MCapstone: MCapstoneReady,
     
     // Return codes
     ERR_OK: 0,         // No error: everything was fine
@@ -122,7 +132,7 @@ var cs = {
         this.id = MCapstone.getValue(pointer, 'i32');
 
         // Address (EIP) of this instruction
-        this.address = MCapstone.getValue(pointer + 8, 'i64');
+        this.address = getValue64(pointer + 8);
 
         // Size of this instruction
         this.size = MCapstone.getValue(pointer + 16, 'i16');
@@ -138,14 +148,14 @@ var cs = {
         }
 
         // ASCII representation of instruction mnemonic
-        this.mnemonic = MCapstone.UTF8ToString(pointer + 34);
+        this.mnemonic = MCapstone.UTF8ToString(pointer + 42);
 
         // ASCII representation of instruction operands
-        this.op_str = MCapstone.UTF8ToString(pointer + 66);
+        this.op_str = MCapstone.UTF8ToString(pointer + 74);
 
         // Details
         var detail = {};
-        var detail_addr = MCapstone.getValue(pointer + 228, '*');
+        var detail_addr = MCapstone.getValue(pointer + 236, '*');
         if (detail_addr != 0) {
             // Architecture-agnostic instruction info
             detail.op = [];
@@ -240,7 +250,7 @@ var cs = {
                         op.reg = MCapstone.getValue(op_addr + 28, 'i32');
                         break;
                     case cs.ARM64_OP_IMM:
-                        op.imm = MCapstone.getValue(op_addr + 28, 'i64');
+                        op.imm = getValue64(op_addr + 28);
                         break;
                     case cs.ARM64_OP_FP:
                         op.fp = MCapstone.getValue(op_addr + 28, 'double');
@@ -282,12 +292,12 @@ var cs = {
                         op.reg = MCapstone.getValue(op_addr + 4, 'i32');
                         break;
                     case cs.MIPS_OP_IMM:
-                        op.imm = MCapstone.getValue(op_addr + 4, 'i64');
+                        op.imm = getValue64(op_addr + 4);
                         break;
                     case cs.MIPS_OP_MEM:
                         op.mem = {
                             base: MCapstone.getValue(op_addr + 4, 'i32'),
-                            disp: MCapstone.getValue(op_addr + 8, 'i64'),
+                            disp: getValue64(op_addr + 8),
                         };
                         break;
                     }
@@ -310,7 +320,7 @@ var cs = {
                 detail.addr_size = MCapstone.getValue(arch_info_addr + 0x09, 'i8');
                 detail.modrm = MCapstone.getValue(arch_info_addr + 0x0A, 'i8');
                 detail.sib = MCapstone.getValue(arch_info_addr + 0x0B, 'i8');
-                detail.disp = MCapstone.getValue(arch_info_addr + 0x10, 'i64');
+                detail.disp = getValue64(arch_info_addr + 0x10);
                 detail.sib_index = MCapstone.getValue(arch_info_addr + 0x18, 'i32');
                 detail.sib_scale = MCapstone.getValue(arch_info_addr + 0x1C, 'i8');
                 detail.sib_base = MCapstone.getValue(arch_info_addr + 0x20, 'i32');
@@ -319,8 +329,8 @@ var cs = {
                 detail.avx_cc = MCapstone.getValue(arch_info_addr + 0x2C, 'i32');
                 detail.avx_sae = MCapstone.getValue(arch_info_addr + 0x30, 'i8');
                 detail.avx_rm = MCapstone.getValue(arch_info_addr + 0x34, 'i32');
-                detail.eflags = MCapstone.getValue(arch_info_addr + 0x38, 'i64');
-                detail.fpu_flags = MCapstone.getValue(arch_info_addr + 0x38, 'i64');
+                detail.eflags = getValue64(arch_info_addr + 0x38);
+                detail.fpu_flags = getValue64(arch_info_addr + 0x38);
                 // Operands
                 var op_size = 48;
                 var op_count = MCapstone.getValue(arch_info_addr + 0x40, 'i8');
@@ -333,7 +343,7 @@ var cs = {
                         op.reg = MCapstone.getValue(op_addr + 8, 'i32');
                         break;
                     case cs.X86_OP_IMM:
-                        op.imm = MCapstone.getValue(op_addr + 8, 'i64');
+                        op.imm = getValue64(op_addr + 8);
                         break;
                     case cs.X86_OP_FP:
                         op.fp = MCapstone.getValue(op_addr + 8, 'double');
@@ -344,7 +354,7 @@ var cs = {
                             base:     MCapstone.getValue(op_addr + 12, 'i32'),
                             index:    MCapstone.getValue(op_addr + 16, 'i32'),
                             scale:    MCapstone.getValue(op_addr + 20, 'i32'),
-                            disp:     MCapstone.getValue(op_addr + 24, 'i64'),
+                            disp:     getValue64(op_addr + 24),
                         };
                         break;
                     }
@@ -441,8 +451,8 @@ var cs = {
                         op.mem = {
                             base:   MCapstone.getValue(op_addr +  4, 'i8'),
                             index:  MCapstone.getValue(op_addr +  5, 'i8'),
-                            length: MCapstone.getValue(op_addr +  8, 'i64'),
-                            disp:   MCapstone.getValue(op_addr + 16, 'i64'),
+                            length: getValue64(op_addr +  8),
+                            disp:   getValue64(op_addr + 16),
                         };
                         break;
                     }
@@ -533,7 +543,7 @@ var cs = {
 
             // Dereference intruction array
             var insn_ptr = MCapstone.getValue(insn_ptr_ptr, 'i32');
-            var insn_size = 232;
+            var insn_size = 240;
             var instructions = [];
 
             // Save instructions

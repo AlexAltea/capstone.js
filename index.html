@@ -305,16 +305,6 @@ d.close();</code></pre>
         tr.appendChild(td);
       }
 
-      // arch/endianness/mode require rebuilding the disassembler; offset/buffer only re-render
-      [elArchitecture, elEndianness, elMode].forEach(function (el) {
-        el.addEventListener('change', function () {
-          capstoneConfigure();
-          capstoneRender();
-        });
-      });
-      elOffset.addEventListener('input', capstoneRender);
-      elBuffer.addEventListener('input', capstoneRender);
-
       // Initial state
       elArchitecture.value = cs.ARCH_X86;
       elEndianness.value   = cs.MODE_LITTLE_ENDIAN;
@@ -322,9 +312,22 @@ d.close();</code></pre>
       elOffset.value       = "10000";
       elBuffer.value       = "55 31 D2 89 E5 8B 45 08";
 
-      // Initial build + render
-      capstoneConfigure();
-      capstoneRender();
+      // WebAssembly loads asynchronously
+      cs.MCapstone.then(function () {
+        // Architectural changes require rebuilding the disassembler
+        [elArchitecture, elEndianness, elMode].forEach(function (el) {
+          el.addEventListener('change', function () {
+            capstoneConfigure();
+            capstoneRender();
+          });
+        });
+        // Offset/buffer changes only require re-rendering
+        elOffset.addEventListener('input', capstoneRender);
+        elBuffer.addEventListener('input', capstoneRender);
+        // Initial configuration and render
+        capstoneConfigure();
+        capstoneRender();
+      });
     </script>
   </body>
 </html>
