@@ -182,6 +182,8 @@ def compileCapstone(archs=[], diet=False):
         '-DCAPSTONE_BUILD_TESTS=OFF',
         '-DCAPSTONE_BUILD_CSTOOL=OFF',
     ]
+    if diet:
+        cmd.append('-DCAPSTONE_BUILD_DIET=ON')
     for a in AVAILABLE_ARCHITECTURES:
         if archs and a not in archs:
             cmd.append(f'-DCAPSTONE_{a}_SUPPORT=0')
