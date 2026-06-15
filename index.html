@@ -101,17 +101,13 @@
     <div class="container">
 
       <h2>Demo</h2>
-      <p class="text-body-secondary">
-        Before going to the Installation / Tutorial panels below, you might want to know what Capstone.js tastes like.
-        Here you have a simple demo, providing realtime client-side machine code disassembling thanks to Capstone.js.
-        The architecture/endianness/mode combination is not validated, so an invalid choice (e.g. <i>16-bit PowerPC</i>) raises a JavaScript error.
-      </p>
-
       <div class="row g-4">
         <div class="col-lg-6">
           <div class="card h-100 shadow-sm">
             <div class="card-header">
-              <span class="h6 mb-0 fw-semibold">Machine code <span id="config-error" class="badge text-bg-warning d-none ms-1">Invalid</span></span>
+              <span class="h6 mb-0 fw-semibold">Machine code
+                <span id="config-error" class="badge text-bg-danger align-middle d-none ms-1" title="Invalid combination of architecture, endianness and mode selected">Invalid</span>
+              </span>
             </div>
             <div class="card-body">
               <div class="row g-3">
@@ -270,10 +266,6 @@ MCapstone().then(function (cs) {
       const elInstructions = document.getElementById('instructions');
       const elConfigError  = document.getElementById('config-error');
 
-      // Static initial state
-      elOffset.value = "10000";
-      elBuffer.value = "55 31 D2 89 E5 8B 45 08";
-
       // WebAssembly loads asynchronously; the resolved module is the Capstone API
       MCapstone().then((cs) => {
         // Active disassembler, recreated when architecture/endianness/mode change
@@ -282,13 +274,25 @@ MCapstone().then(function (cs) {
         function capstoneConfigure() {
           if (d) {
             d.close();
+            d = null;
           }
           const arch = parseInt(elArchitecture.value, 10);
           const mode = parseInt(elEndianness.value, 10) | parseInt(elMode.value, 10);
-          d = new cs.Capstone(arch, mode);
+          try {
+            d = new cs.Capstone(arch, mode);
+            elConfigError.classList.add('d-none');
+            [elArchitecture, elEndianness, elMode].forEach((el) => el.classList.remove('is-invalid'));
+          } catch (e) {
+            elConfigError.classList.remove('d-none');
+            [elArchitecture, elEndianness, elMode].forEach((el) => el.classList.add('is-invalid'));
+          }
         };
 
         function capstoneRender() {
+          elInstructions.textContent = '';
+          if (!d) {
+            return;
+          }
           const trimmedBuffer = elBuffer.value.replace(/[^a-fA-F0-9]/g, '');
           if (trimmedBuffer.length % 2 !== 0) {
             return;
@@ -301,7 +305,6 @@ MCapstone().then(function (cs) {
           const offset = hexOffset ? BigInt('0x' + hexOffset) : 0n;
           const instructions = d.disasm(csBuffer, offset);
 
-          elInstructions.textContent = '';
           instructions.forEach((instr) => {
             const bytes = instr.bytes.map((b) => hexadecimal(b, 2)).join(' ');
             const tr = document.createElement('tr');
@@ -313,9 +316,6 @@ MCapstone().then(function (cs) {
           });
         };
 
-        elArchitecture.value = cs.ARCH_X86;
-        elEndianness.value   = cs.MODE_LITTLE_ENDIAN;
-        elMode.value         = cs.MODE_64;
         // Architectural changes require rebuilding the disassembler
         [elArchitecture, elEndianness, elMode].forEach((el) => {
           el.addEventListener('change', () => {
@@ -326,7 +326,13 @@ MCapstone().then(function (cs) {
         // Offset/buffer changes only require re-rendering
         elOffset.addEventListener('input', capstoneRender);
         elBuffer.addEventListener('input', capstoneRender);
+
         // Initial configuration and render
+        elOffset.value       = "10000";
+        elBuffer.value       = "55 31 D2 89 E5 8B 45 08";
+        elArchitecture.value = cs.ARCH_X86;
+        elEndianness.value   = cs.MODE_LITTLE_ENDIAN;
+        elMode.value         = cs.MODE_64;
         capstoneConfigure();
         capstoneRender();
       });
