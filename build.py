@@ -8,6 +8,7 @@
 
 import os
 import re
+import subprocess
 import sys
 
 EXPORTED_FUNCTIONS = [
@@ -175,60 +176,47 @@ def compileCapstone(targets):
     except OSError:
         pass
 
-    # CMake
-    cmd = 'emcmake cmake'
-    cmd += ' -DCMAKE_BUILD_TYPE=Release'
-    cmd += ' -DCMAKE_C_FLAGS="-Wno-warn-absolute-paths"'
-    cmd += ' -DCAPSTONE_BUILD_TESTS=OFF'
-    cmd += ' -DCAPSTONE_BUILD_STATIC_LIBS=ON'
-    cmd += ' -DCAPSTONE_BUILD_SHARED=OFF'
+    # Configure with CMake
+    cmd = [
+        'emcmake', 'cmake',
+        '-DCMAKE_BUILD_TYPE=Release',
+        '-DCMAKE_C_FLAGS=-Wno-warn-absolute-paths',
+        '-DCAPSTONE_BUILD_TESTS=OFF',
+        '-DCAPSTONE_BUILD_STATIC_LIBS=ON',
+        '-DCAPSTONE_BUILD_SHARED=OFF',
+    ]
     if targets:
         targets = [t.upper() for t in targets]
         for arch in AVAILABLE_TARGETS:
             if arch not in targets:
-                cmd += ' -DCAPSTONE_%s_SUPPORT=0' % arch
-    if os.name == 'nt':
-        cmd += ' -G \"MinGW Makefiles\"'
-    if os.name == 'posix':
-        cmd += ' -G \"Unix Makefiles\"'
-    cmd += ' capstone/CMakeLists.txt'
-    if os.system(cmd) != 0:
-        print("CMake errored")
-        sys.exit(1)
+                cmd.append('-DCAPSTONE_%s_SUPPORT=0' % arch)
+    cmd += ['-G', 'Unix Makefiles', 'capstone/CMakeLists.txt']
+    subprocess.run(cmd, check=True)
 
-    # MinGW (Windows) or Make (Linux/Unix)
-    os.chdir('capstone')
-    if os.name == 'nt':
-        make = 'mingw32-make'
-    if os.name == 'posix':
-        make = 'emmake make'
-    if os.system(make) != 0:
-        print("Make errored")
-        sys.exit(1)
-    os.chdir('..')
+    # Build the static library
+    subprocess.run(['emmake', 'make'], check=True, cwd='capstone')
 
-    # Compile static library to JavaScript
-    exports = EXPORTED_FUNCTIONS
+    # Compile the static library to JavaScript
     methods = [
         'ccall', 'getValue', 'setValue', 'writeArrayToMemory', 'UTF8ToString'
     ]
-    cmd = 'emcc'
-    cmd += ' -Os'
-    cmd += ' capstone/libcapstone.a'
-    cmd += ' -s EXPORTED_FUNCTIONS=\"[\''+ '\', \''.join(exports) +'\']\"'
-    cmd += ' -s EXPORTED_RUNTIME_METHODS=\"[\''+ '\', \''.join(methods) +'\']\"'
-    cmd += ' -s ALLOW_MEMORY_GROWTH=1'
-    cmd += ' -s MODULARIZE=1'
-    cmd += ' -s WASM=2'
-    cmd += ' -s EXPORT_NAME="\'MCapstone\'"'
+    cmd = [
+        'emcc',
+        '-Os',
+        'capstone/libcapstone.a',
+        '-s', "EXPORTED_FUNCTIONS=[%s]" % ', '.join("'%s'" % f for f in EXPORTED_FUNCTIONS),
+        '-s', "EXPORTED_RUNTIME_METHODS=[%s]" % ', '.join("'%s'" % m for m in methods),
+        '-s', 'ALLOW_MEMORY_GROWTH=1',
+        '-s', 'MODULARIZE=1',
+        '-s', 'WASM=2',
+        '-s', "EXPORT_NAME='MCapstone'",
+    ]
     for path in constant_files():
-        cmd += ' --post-js ' + path
-    cmd += ' --post-js src/capstone-wrapper.js'
+        cmd += ['--post-js', path]
+    cmd += ['--post-js', 'src/capstone-wrapper.js']
     os.makedirs('dist', exist_ok=True)
-    cmd += ' -o dist/capstone%s.js' % suffix_for(targets)
-    if os.system(cmd) != 0:
-        print("Emscripten errored", cmd)
-        sys.exit(1)
+    cmd += ['-o', 'dist/capstone%s.js' % suffix_for(targets)]
+    subprocess.run(cmd, check=True)
 
 
 def suffix_for(targets):
@@ -239,11 +227,6 @@ if __name__ == "__main__":
     # Initialize Capstone submodule if necessary
     if not os.listdir(CAPSTONE_DIR):
         os.system("git submodule update --init")
-
-    if os.name not in ('nt', 'posix'):
-        print("Your operating system is not supported by this script:")
-        print("Please, use Emscripten to compile Capstone manually to dist/capstone.js")
-        sys.exit(1)
 
     args = sys.argv[1:]
     generateConstants()
