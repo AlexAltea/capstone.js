@@ -4,155 +4,152 @@
  */
 
 Object.assign(Module, {
-    // Return codes
-    ERR_OK: 0,         // No error: everything was fine
-    ERR_MEM: 1,        // Out-Of-Memory error: cs_open(), cs_disasm(), cs_disasm_iter()
-    ERR_ARCH: 2,       // Unsupported architecture: cs_open()
-    ERR_HANDLE: 3,     // Invalid handle: cs_op_count(), cs_op_index()
-    ERR_CSH: 4,        // Invalid csh argument: cs_close(), cs_errno(), cs_option()
-    ERR_MODE: 5,       // Invalid/unsupported mode: cs_open()
-    ERR_OPTION: 6,     // Invalid/unsupported option: cs_option()
-    ERR_DETAIL: 7,     // Information is unavailable because detail option is OFF
-    ERR_MEMSETUP: 8,   // Dynamic memory management uninitialized (see OPT_MEM)
-    ERR_VERSION: 9,    // Unsupported version (bindings)
-    ERR_DIET: 10,      // Access irrelevant data in "diet" engine
-    ERR_SKIPDATA: 11,  // Access irrelevant data for "data" instruction in SKIPDATA mode
-    ERR_X86_ATT: 12,   // X86 AT&T syntax is unsupported (opt-out at compile time)
-    ERR_X86_INTEL: 13, // X86 Intel syntax is unsupported (opt-out at compile time)
-    ERR_X86_MASM: 14,  // X86 Masm syntax is unsupported (opt-out at compile time)
+    // cs_err
+    ERR_OK: 0,
+    ERR_MEM: 1,
+    ERR_ARCH: 2,
+    ERR_HANDLE: 3,
+    ERR_CSH: 4,
+    ERR_MODE: 5,
+    ERR_OPTION: 6,
+    ERR_DETAIL: 7,
+    ERR_MEMSETUP: 8,
+    ERR_VERSION: 9,
+    ERR_DIET: 10,
+    ERR_SKIPDATA: 11,
+    ERR_X86_ATT: 12,
+    ERR_X86_INTEL: 13,
+    ERR_X86_MASM: 14,
 
-    // Architectures
-    ARCH_ARM: 0,        // ARM architecture (including Thumb, Thumb-2)
-    ARCH_ARM64: 1,      // ARM-64, also called AArch64
-    ARCH_MIPS: 2,       // Mips architecture
-    ARCH_X86: 3,        // X86 architecture (including x86 & x86-64)
-    ARCH_PPC: 4,        // PowerPC architecture
-    ARCH_SPARC: 5,      // Sparc architecture
-    ARCH_SYSZ: 6,       // SystemZ architecture
-    ARCH_XCORE: 7,      // XCore architecture
-    ARCH_M68K: 8,       // 68K architecture
-    ARCH_TMS320C64X: 9, // TMS320C64x architecture
-    ARCH_M680X: 10,     // 680X architecture
-    ARCH_EVM: 11,       // Ethereum architecture
-    ARCH_MOS65XX: 12,   // MOS65XX architecture (including MOS6502)
-    ARCH_WASM: 13,      // WebAssembly architecture
-    ARCH_BPF: 14,       // Berkeley Packet Filter architecture (including eBPF)
-    ARCH_RISCV: 15,     // RISCV architecture
-    ARCH_SH: 16,        // SH architecture
-    ARCH_TRICORE: 17,   // TriCore architecture
+    // cs_arch
+    ARCH_ARM: 0,
+    ARCH_ARM64: 1,
+    ARCH_MIPS: 2,
+    ARCH_X86: 3,
+    ARCH_PPC: 4,
+    ARCH_SPARC: 5,
+    ARCH_SYSZ: 6,
+    ARCH_XCORE: 7,
+    ARCH_M68K: 8,
+    ARCH_TMS320C64X: 9,
+    ARCH_M680X: 10,
+    ARCH_EVM: 11,
+    ARCH_MOS65XX: 12,
+    ARCH_WASM: 13,
+    ARCH_BPF: 14,
+    ARCH_RISCV: 15,
+    ARCH_SH: 16,
+    ARCH_TRICORE: 17,
     ARCH_MAX: 18,
     ARCH_ALL: 0xFFFF,
 
-    // Modes
-    MODE_LITTLE_ENDIAN: 0,     // Little-Endian mode (default mode)
-    MODE_ARM: 0,               // 32-bit ARM
-    MODE_16: 1 << 1,           // 16-bit mode (X86)
-    MODE_32: 1 << 2,           // 32-bit mode (X86)
-    MODE_64: 1 << 3,           // 64-bit mode (X86, PPC)
-    MODE_THUMB: 1 << 4,        // ARM's Thumb mode, including Thumb-2
-    MODE_MCLASS: 1 << 5,       // ARM's Cortex-M series
-    MODE_V8: 1 << 6,           // ARMv8 A32 encodings for ARM
-    MODE_MICRO: 1 << 4,        // MicroMips mode (MIPS)
-    MODE_MIPS3: 1 << 5,        // Mips III ISA
-    MODE_MIPS32R6: 1 << 6,     // Mips32r6 ISA
-    MODE_MIPS2: 1 << 7,        // Mips II ISA
-    MODE_V9: 1 << 4,           // SparcV9 mode (Sparc)
-    MODE_QPX: 1 << 4,          // Quad Processing eXtensions mode (PPC)
-    MODE_SPE: 1 << 5,          // Signal Processing Engine mode (PPC)
-    MODE_BOOKE: 1 << 6,        // Book-E mode (PPC)
-    MODE_PS: 1 << 7,           // Paired-singles mode (PPC)
-    MODE_M68K_000: 1 << 1,     // M68K 68000 mode
-    MODE_M68K_010: 1 << 2,     // M68K 68010 mode
-    MODE_M68K_020: 1 << 3,     // M68K 68020 mode
-    MODE_M68K_030: 1 << 4,     // M68K 68030 mode
-    MODE_M68K_040: 1 << 5,     // M68K 68040 mode
-    MODE_M68K_060: 1 << 6,     // M68K 68060 mode
-    MODE_BIG_ENDIAN: 1 << 31,  // Big-Endian mode
-    MODE_MIPS32: 1 << 2,       // Mips32 ISA (Mips)
-    MODE_MIPS64: 1 << 3,       // Mips64 ISA (Mips)
-    MODE_M680X_6301: 1 << 1,   // M680X Hitachi 6301,6303 mode
-    MODE_M680X_6309: 1 << 2,   // M680X Hitachi 6309 mode
-    MODE_M680X_6800: 1 << 3,   // M680X Motorola 6800,6802 mode
-    MODE_M680X_6801: 1 << 4,   // M680X Motorola 6801,6803 mode
-    MODE_M680X_6805: 1 << 5,   // M680X Motorola/Freescale 6805 mode
-    MODE_M680X_6808: 1 << 6,   // M680X Motorola/Freescale/NXP 68HC08 mode
-    MODE_M680X_6809: 1 << 7,   // M680X Motorola 6809 mode
-    MODE_M680X_6811: 1 << 8,   // M680X Motorola/Freescale/NXP 68HC11 mode
-    MODE_M680X_CPU12: 1 << 9,  // M680X Motorola/Freescale/NXP CPU12 (M68HC12/HCS12)
-    MODE_M680X_HCS08: 1 << 10, // M680X Freescale/NXP HCS08 mode
-    MODE_BPF_CLASSIC: 0,       // Classic BPF mode (default)
-    MODE_BPF_EXTENDED: 1 << 0, // Extended BPF mode
-    MODE_RISCV32: 1 << 0,      // RISCV RV32G
-    MODE_RISCV64: 1 << 1,      // RISCV RV64G
-    MODE_RISCVC: 1 << 2,       // RISCV compressed instruction mode
-    MODE_MOS65XX_6502: 1 << 1,           // MOS65XX MOS 6502
-    MODE_MOS65XX_65C02: 1 << 2,          // MOS65XX WDC 65c02
-    MODE_MOS65XX_W65C02: 1 << 3,         // MOS65XX WDC W65c02
-    MODE_MOS65XX_65816: 1 << 4,          // MOS65XX WDC 65816, 8-bit m/x
-    MODE_MOS65XX_65816_LONG_M: 1 << 5,   // MOS65XX WDC 65816, 16-bit m, 8-bit x
-    MODE_MOS65XX_65816_LONG_X: 1 << 6,   // MOS65XX WDC 65816, 8-bit m, 16-bit x
-    MODE_MOS65XX_65816_LONG_MX: (1 << 5) | (1 << 6), // MOS65XX WDC 65816, 16-bit m/x
-    MODE_SH2: 1 << 1,          // SH2
-    MODE_SH2A: 1 << 2,         // SH2A
-    MODE_SH3: 1 << 3,          // SH3
-    MODE_SH4: 1 << 4,          // SH4
-    MODE_SH4A: 1 << 5,         // SH4A
-    MODE_SHFPU: 1 << 6,        // SH with FPU
-    MODE_SHDSP: 1 << 7,        // SH with DSP
-    MODE_TRICORE_110: 1 << 1,  // Tricore 1.1
-    MODE_TRICORE_120: 1 << 2,  // Tricore 1.2
-    MODE_TRICORE_130: 1 << 3,  // Tricore 1.3
-    MODE_TRICORE_131: 1 << 4,  // Tricore 1.3.1
-    MODE_TRICORE_160: 1 << 5,  // Tricore 1.6
-    MODE_TRICORE_161: 1 << 6,  // Tricore 1.6.1
-    MODE_TRICORE_162: 1 << 7,  // Tricore 1.6.2
+    // cs_mode
+    MODE_LITTLE_ENDIAN: 0,
+    MODE_ARM: 0,
+    MODE_16: 1 << 1,
+    MODE_32: 1 << 2,
+    MODE_64: 1 << 3,
+    MODE_THUMB: 1 << 4,
+    MODE_MCLASS: 1 << 5,
+    MODE_V8: 1 << 6,
+    MODE_MICRO: 1 << 4,
+    MODE_MIPS3: 1 << 5,
+    MODE_MIPS32R6: 1 << 6,
+    MODE_MIPS2: 1 << 7,
+    MODE_V9: 1 << 4,
+    MODE_QPX: 1 << 4,
+    MODE_SPE: 1 << 5,
+    MODE_BOOKE: 1 << 6,
+    MODE_PS: 1 << 7,
+    MODE_M68K_000: 1 << 1,
+    MODE_M68K_010: 1 << 2,
+    MODE_M68K_020: 1 << 3,
+    MODE_M68K_030: 1 << 4,
+    MODE_M68K_040: 1 << 5,
+    MODE_M68K_060: 1 << 6,
+    MODE_BIG_ENDIAN: 0x80000000,
+    MODE_MIPS32: 1 << 2,
+    MODE_MIPS64: 1 << 3,
+    MODE_M680X_6301: 1 << 1,
+    MODE_M680X_6309: 1 << 2,
+    MODE_M680X_6800: 1 << 3,
+    MODE_M680X_6801: 1 << 4,
+    MODE_M680X_6805: 1 << 5,
+    MODE_M680X_6808: 1 << 6,
+    MODE_M680X_6809: 1 << 7,
+    MODE_M680X_6811: 1 << 8,
+    MODE_M680X_CPU12: 1 << 9,
+    MODE_M680X_HCS08: 1 << 10,
+    MODE_BPF_CLASSIC: 0,
+    MODE_BPF_EXTENDED: 1 << 0,
+    MODE_RISCV32: 1 << 0,
+    MODE_RISCV64: 1 << 1,
+    MODE_RISCVC: 1 << 2,
+    MODE_MOS65XX_6502: 1 << 1,
+    MODE_MOS65XX_65C02: 1 << 2,
+    MODE_MOS65XX_W65C02: 1 << 3,
+    MODE_MOS65XX_65816: 1 << 4,
+    MODE_MOS65XX_65816_LONG_M: 1 << 5,
+    MODE_MOS65XX_65816_LONG_X: 1 << 6,
+    MODE_MOS65XX_65816_LONG_MX: (1 << 5) | (1 << 6),
+    MODE_SH2: 1 << 1,
+    MODE_SH2A: 1 << 2,
+    MODE_SH3: 1 << 3,
+    MODE_SH4: 1 << 4,
+    MODE_SH4A: 1 << 5,
+    MODE_SHFPU: 1 << 6,
+    MODE_SHDSP: 1 << 7,
+    MODE_TRICORE_110: 1 << 1,
+    MODE_TRICORE_120: 1 << 2,
+    MODE_TRICORE_130: 1 << 3,
+    MODE_TRICORE_131: 1 << 4,
+    MODE_TRICORE_160: 1 << 5,
+    MODE_TRICORE_161: 1 << 6,
+    MODE_TRICORE_162: 1 << 7,
 
-    // Options
-    OPT_INVALID: 0,            // No option specified
-    OPT_SYNTAX: 1,             // Assembly output syntax
-    OPT_DETAIL: 2,             // Break down instruction structure into details
-    OPT_MODE: 3,               // Change engine's mode at run-time
-    OPT_MEM: 4,                // User-defined dynamic memory related functions
-    OPT_SKIPDATA: 5,           // Skip data when disassembling
-    OPT_SKIPDATA_SETUP: 6,     // Setup user-defined function for SKIPDATA option
-    OPT_MNEMONIC: 7,           // Customize instruction mnemonic
-    OPT_UNSIGNED: 8,           // Print immediate operands in unsigned form
-    OPT_NO_BRANCH_OFFSET: 9,   // ARM, prints branch immediates without offset
+    // cs_opt_type
+    OPT_INVALID: 0,
+    OPT_SYNTAX: 1,
+    OPT_DETAIL: 2,
+    OPT_MODE: 3,
+    OPT_MEM: 4,
+    OPT_SKIPDATA: 5,
+    OPT_SKIPDATA_SETUP: 6,
+    OPT_MNEMONIC: 7,
+    OPT_UNSIGNED: 8,
+    OPT_NO_BRANCH_OFFSET: 9,
 
-    // Capstone option value
-    OPT_OFF: 0,                // Turn OFF an option (default for DETAIL, SKIPDATA, UNSIGNED)
-    OPT_ON: 3,                 // Turn ON an option (CS_OPT_DETAIL, CS_OPT_SKIPDATA)
+    // cs_opt_value
+    OPT_OFF: 0,
+    OPT_ON: 3,
+    OPT_SYNTAX_DEFAULT: 0,
+    OPT_SYNTAX_INTEL: 1,
+    OPT_SYNTAX_ATT: 2,
+    OPT_SYNTAX_NOREGNAME: 3,
+    OPT_SYNTAX_MASM: 4,
+    OPT_SYNTAX_MOTOROLA: 5,
 
-    // Capstone syntax value
-    OPT_SYNTAX_DEFAULT: 0,     // Default assembly syntax of all platforms (CS_OPT_SYNTAX)
-    OPT_SYNTAX_INTEL: 1,       // Intel X86 asm syntax - default syntax on X86 (CS_OPT_SYNTAX, CS_ARCH_X86)
-    OPT_SYNTAX_ATT: 2,         // ATT asm syntax (CS_OPT_SYNTAX, CS_ARCH_X86)
-    OPT_SYNTAX_NOREGNAME: 3,   // Asm syntax prints register name with only number (CS_OPT_SYNTAX, CS_ARCH_PPC, CS_ARCH_ARM)
-    OPT_SYNTAX_MASM: 4,        // X86 Intel Masm syntax (CS_OPT_SYNTAX)
-    OPT_SYNTAX_MOTOROLA: 5,    // MOS65XX uses $ as hex prefix (CS_OPT_SYNTAX)
-
-    // Common instruction groups - to be consistent across all architectures.
-    GRP_INVALID: 0,            // uninitialized/invalid group.
-    GRP_JUMP: 1,               // all jump instructions (conditional+direct+indirect jumps)
-    GRP_CALL: 2,               // all call instructions
-    GRP_RET: 3,                // all return instructions
-    GRP_INT: 4,                // all interrupt instructions (int+syscall)
-    GRP_IRET: 5,               // all interrupt return instructions
-    GRP_PRIVILEGE: 6,          // all privileged instructions
-    GRP_BRANCH_RELATIVE: 7,    // all relative branching instructions
-
-    // Common instruction operand types - to be consistent across all architectures.
+    // cs_op_type
     OP_INVALID: 0,
     OP_REG: 1,
     OP_IMM: 2,
     OP_MEM: 3,
     OP_FP: 4,
 
-    // Common instruction operand access types - to be consistent across all
-    // architectures (combine with bitwise OR).
-    AC_INVALID: 0,             // Uninitialized/invalid access type
-    AC_READ: 1 << 0,           // Operand read from memory or register
-    AC_WRITE: 1 << 1,          // Operand write to memory or register
+    // cs_ac_type
+    AC_INVALID: 0,
+    AC_READ: 1 << 0,
+    AC_WRITE: 1 << 1,
+
+    // cs_group_type
+    GRP_INVALID: 0,
+    GRP_JUMP: 1,
+    GRP_CALL: 2,
+    GRP_RET: 3,
+    GRP_INT: 4,
+    GRP_IRET: 5,
+    GRP_PRIVILEGE: 6,
+    GRP_BRANCH_RELATIVE: 7,
 
     // query id for cs_support()
     SUPPORT_DIET: 0xFFFF + 1,
