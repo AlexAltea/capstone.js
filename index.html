@@ -42,6 +42,10 @@
         font-family: 'Inconsolata', monospace;
         font-size: 14px;
       }
+      .table-responsive {
+        max-height: 360px;
+        overflow-y: auto;
+      }
       pre code.hljs {
         padding: 1rem;
         border: 1px solid #dee2e6;
@@ -107,7 +111,7 @@
         <div class="col-lg-6">
           <div class="card h-100 shadow-sm">
             <div class="card-header">
-              <h3 class="h6 mb-0 fw-semibold">Machine code</h3>
+              <span class="h6 mb-0 fw-semibold">Machine code <span id="config-error" class="badge text-bg-warning d-none ms-1">Invalid</span></span>
             </div>
             <div class="card-body">
               <div class="row g-3">
@@ -158,7 +162,7 @@
         <div class="col-lg-6">
           <div class="card h-100 shadow-sm">
             <div class="card-header">
-              <h3 class="h6 mb-0 fw-semibold">Disassembly</h3>
+              <span class="h6 mb-0 fw-semibold">Disassembly</span>
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -182,7 +186,7 @@
       <div class="row mt-5">
         <div class="col-md-6">
           <h2>Information</h2>
-          <p><b>Capstone.js</b> is a port of the <a href="http://www.capstone-engine.org/">Capstone</a> disassembler framework for JavaScript, done with <a href="https://github.com/kripken/emscripten">Emscripten</a>. It's released as a 5 MB JavaScript file supporting the architectures: <i>ARM</i>, <i>ARM64</i>, <i>MIPS</i>, <i>PowerPC</i>, <i>Sparc</i>, <i>SystemZ</i>, <i>XCore</i> and <i>x86</i>. Follow the <a href="https://github.com/AlexAltea/capstone.js/blob/master/README.md">Readme</a> to compile a subset of these, with a size of 500 KB per platform.</p>
+          <p><b>Capstone.js</b> is a port of the <a href="http://www.capstone-engine.org/">Capstone</a> disassembler framework for JavaScript, done with <a href="https://github.com/emscripten-core/emscripten">Emscripten</a>. It's released as a 5 MB JavaScript file supporting the architectures: <i>ARM</i>, <i>ARM64</i>, <i>MIPS</i>, <i>PowerPC</i>, <i>Sparc</i>, <i>SystemZ</i>, <i>XCore</i> and <i>x86</i>. Follow the <a href="https://github.com/AlexAltea/capstone.js/blob/master/README.md">Readme</a> to compile a subset of these, with a size of 500 KB per platform.</p>
           <p>Capstone is a lightweight multi-architecture disassembly framework originally developed by Nguyen Anh Quynh, with support of other developers and released under BSD license. None of its source code has been altered for this port.</p>
 
           <h2>Installation</h2>
@@ -257,6 +261,7 @@ d.close();</code></pre>
       var elOffset       = document.getElementById('offset');
       var elBuffer       = document.getElementById('buffer');
       var elInstructions = document.getElementById('instructions');
+      var elConfigError  = document.getElementById('config-error');
 
       // Active disassembler; recreated when architecture/endianness/mode change
       var d = null;
