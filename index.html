@@ -116,11 +116,21 @@
                   <select id="architecture" class="form-select">
                     <option value="0">ARM</option>
                     <option value="1">ARM64</option>
+                    <option value="14">BPF</option>
+                    <option value="11">EVM</option>
+                    <option value="10">M680X</option>
+                    <option value="8">M68K</option>
                     <option value="2">MIPS</option>
-                    <option value="3">x86</option>
+                    <option value="12">MOS65xx</option>
                     <option value="4">PowerPC</option>
+                    <option value="15">RISC-V</option>
+                    <option value="16">SH</option>
                     <option value="5">SPARC</option>
                     <option value="6">SystemZ</option>
+                    <option value="9">TMS320C64x</option>
+                    <option value="17">TriCore</option>
+                    <option value="13">WebAssembly</option>
+                    <option value="3">x86</option>
                     <option value="7">XCore</option>
                   </select>
                 </div>
@@ -182,7 +192,7 @@
       <div class="row mt-5">
         <div class="col-md-6">
           <h2>Information</h2>
-          <p><b>Capstone.js</b> is a port of the <a href="http://www.capstone-engine.org/">Capstone</a> disassembler framework for JavaScript, done with <a href="https://github.com/emscripten-core/emscripten">Emscripten</a>. It's released as a 5 MB JavaScript file supporting the architectures: <i>ARM</i>, <i>ARM64</i>, <i>MIPS</i>, <i>PowerPC</i>, <i>Sparc</i>, <i>SystemZ</i>, <i>XCore</i> and <i>x86</i>. Follow the <a href="https://github.com/AlexAltea/capstone.js/blob/master/README.md">Readme</a> to compile a subset of these, with a size of 500 KB per platform.</p>
+          <p><b>Capstone.js</b> is a port of the <a href="http://www.capstone-engine.org/">Capstone</a> disassembler framework for JavaScript+WASM, powered by <a href="https://github.com/emscripten-core/emscripten">Emscripten</a>. The released 3.5 MiB bundle supports the architectures: <i>ARM</i>, <i>ARM64</i>, <i>BPF</i>, <i>EVM</i>, <i>M680X</i>, <i>M68K</i>, <i>MIPS</i>, <i>MOS65xx</i>, <i>PowerPC</i>, <i>RISC-V</i>, <i>SH</i>, <i>SPARC</i>, <i>SystemZ</i>, <i>TMS320C64x</i>, <i>TriCore</i>, <i>WebAssembly</i>, <i>x86</i> and <i>XCore</i>. Follow the <a href="https://github.com/AlexAltea/capstone.js/blob/master/README.md">Readme</a> to compile a subset of these, with an average size of 500 KB per platform.</p>
           <p>Capstone is a lightweight multi-architecture disassembly framework originally developed by Nguyen Anh Quynh, with support of other developers and released under BSD license. None of its source code has been altered for this port.</p>
 
           <h2>Installation</h2>
@@ -196,16 +206,15 @@
 var buffer = [0x55, 0x31, 0xD2, 0x89, 0xE5, 0x8B, 0x45, 0x08];
 var offset = 0x10000;
 
-// WebAssembly loads asynchronously; the resolved module is the Capstone API
-MCapstone().then(function (cs) {
+MCapstone().then((cs) => {
     // Initialize the decoder
     var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_32);
 
     // Output: Array of cs.Instruction objects
     var instructions = d.disasm(buffer, offset);
 
-    // Display results;
-    instructions.forEach(function (instr) {
+    // Display results
+    instructions.forEach((instr) => {
         console.log("0x%s:\t%s\t%s",
             instr.address.toString(16),
             instr.mnemonic,
