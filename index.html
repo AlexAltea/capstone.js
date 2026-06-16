@@ -8,8 +8,8 @@
     <!-- External stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css" rel="stylesheet"
-          integrity="sha384-fNd8YWakt/tPdUmtC3TuP7+sYc2xegAshr3FFUYklBBDwiP/DpoBvW2HvQNr6w0h" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css" rel="stylesheet"
+          integrity="sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L" crossorigin="anonymous">
     
     <!-- External fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600' rel='stylesheet' type='text/css'>
@@ -50,6 +50,7 @@
         padding: 1rem;
         border: 1px solid #dee2e6;
         border-radius: 6px;
+        background-color: var(--bs-tertiary-bg);
       }
       .btn-primary {
         --bs-btn-bg: #337ab7;
@@ -241,10 +242,10 @@ MCapstone().then((cs) => {
     </div>
 
     <!-- External scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"
-            integrity="sha384-kaknrs+4mAUK7Cfvb68OavtvOQ2AuNxHHeBSG7IbcRVoVwPO73Q/oPB3qop8tNRk" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/languages/javascript.min.js"
-            integrity="sha384-/DX38n5i8baBf5uZU3Um7iyMnFhTwH5WUK3kY2x8gEwnbOiHrq1lYYNVhswLpk//" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+            integrity="sha384-RH2xi4eIQ/gjtbs9fUXM68sLSi99C7ZWBRX1vDrVv6GQXRibxXLbwO2NGZB74MbU" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/javascript.min.js"
+            integrity="sha384-tPOrIubtDHoQU7Rqw0o88ilthGO0/4xEZGB47XrQKWhrc1/SchwsDx+AP74u4nk0" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
@@ -254,7 +255,7 @@ MCapstone().then((cs) => {
     <!-- Simple demo of CapstoneJS -->
     <script>
       // Highlight.JS
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
 
       // Format a Number/BigInt as a zero-padded uppercase hexadecimal
       function hexadecimal(value, padding) {
