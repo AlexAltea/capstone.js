@@ -21,7 +21,8 @@ or install it with the NPM command:
 npm install @alexaltea/capstone-js
 ```
 
-## Usage                                                      
+## Usage
+
 ```javascript
 // Input: Machine code bytes and offset where they are located
 var buffer = [0x55, 0x31, 0xD2, 0x89, 0xE5, 0x8B, 0x45, 0x08];
