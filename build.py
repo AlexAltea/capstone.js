@@ -235,8 +235,9 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     diet = '--diet' in args
     package = '--package' in args
+    release = '--release' in args
     generateConstants()
-    if '--release' in args:
+    if release:
         compileCapstone([], diet, package) # Build all
         for arch in AVAILABLE_ARCHITECTURES:
             compileCapstone([arch], diet, package)
