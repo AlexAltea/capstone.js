@@ -9,7 +9,7 @@ Port of the [Capstone](https://github.com/aquynh/capstone) disassembler framewor
 
 ## Installation
 
-To add Capstone.js to your web application, include it with:
+To use Capstone.js in your web application, download and include it with:
 
 ```html
 <script src="capstone.js"></script>
