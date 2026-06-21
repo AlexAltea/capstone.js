@@ -106,13 +106,11 @@
         <div class="col-lg-6">
           <div class="card h-100 shadow-sm">
             <div class="card-header">
-              <span class="h6 mb-0 fw-semibold">Machine code
-                <span id="config-error" class="badge text-bg-danger align-middle d-none ms-1" title="Invalid combination of architecture, endianness and mode selected">Invalid</span>
-              </span>
+              <span class="h6 mb-0 fw-semibold">Machine code</span>
             </div>
             <div class="card-body">
               <div class="row g-3">
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                   <label for="architecture" class="form-label">Architecture</label>
                   <select id="architecture" class="form-select">
                     <option value="0">ARM</option>
@@ -135,22 +133,11 @@
                     <option value="7">XCore</option>
                   </select>
                 </div>
-                <div class="col-sm-6">
-                  <label for="endianness" class="form-label">Endianness</label>
-                  <select id="endianness" class="form-select">
-                    <option value="0">Little-Endian</option>
-                    <option value="-2147483648">Big-Endian</option>
-                  </select>
-                </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                   <label for="mode" class="form-label">Mode</label>
-                  <select id="mode" class="form-select">
-                    <option value="2">16-bit</option>
-                    <option value="4">32-bit</option>
-                    <option value="8">64-bit</option>
-                  </select>
+                  <select id="mode" class="form-select"></select>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                   <label for="offset" class="form-label">Offset</label>
                   <div class="input-group">
                     <span class="input-group-text">0x</span>
@@ -159,7 +146,7 @@
                 </div>
                 <div class="col-12">
                   <label for="buffer" class="form-label">Bytes (hex)</label>
-                  <textarea id="buffer" class="form-control" rows="4" placeholder="55 31 D2 89 E5 8B 45 08"></textarea>
+                  <textarea id="buffer" class="form-control" rows="4" placeholder="XX XX XX ..."></textarea>
                 </div>
               </div>
             </div>
@@ -295,17 +282,126 @@ MCapstone().then((cs) => {
       }
 
       const elArchitecture = document.getElementById('architecture');
-      const elEndianness   = document.getElementById('endianness');
       const elMode         = document.getElementById('mode');
       const elOffset       = document.getElementById('offset');
       const elBuffer       = document.getElementById('buffer');
       const elInstructions = document.getElementById('instructions');
-      const elConfigError  = document.getElementById('config-error');
 
       // Load the Capstone bundle, then initialize the demo
       loadCapstone().then((cs) => {
-        // Active disassembler, recreated when architecture/endianness/mode change
+        const ARCH_MODES = {
+          [cs.ARCH_ARM]: [
+            { label: 'ARM (little-endian)',   mode: cs.MODE_ARM },
+            { label: 'ARM (big-endian)',      mode: cs.MODE_ARM | cs.MODE_BIG_ENDIAN },
+            { label: 'Thumb (little-endian)', mode: cs.MODE_THUMB },
+            { label: 'Thumb (big-endian)',    mode: cs.MODE_THUMB | cs.MODE_BIG_ENDIAN },
+          ],
+          [cs.ARCH_ARM64]: [
+            { label: 'ARM64 (big-endian)',    mode: cs.MODE_ARM | cs.MODE_BIG_ENDIAN },
+            { label: 'ARM64 (little-endian)', mode: cs.MODE_ARM },
+          ],
+          [cs.ARCH_MIPS]: [
+            { label: 'MIPS32',              mode: cs.MODE_MIPS32 },
+            { label: 'MIPS32 (big-endian)', mode: cs.MODE_MIPS32 | cs.MODE_BIG_ENDIAN },
+            { label: 'MIPS64',              mode: cs.MODE_MIPS64 },
+            { label: 'MIPS64 (big-endian)', mode: cs.MODE_MIPS64 | cs.MODE_BIG_ENDIAN },
+            { label: 'microMIPS',           mode: cs.MODE_MIPS32 | cs.MODE_MICRO },
+          ],
+          [cs.ARCH_X86]: [
+            { label: '16-bit', mode: cs.MODE_16 },
+            { label: '32-bit', mode: cs.MODE_32 },
+            { label: '64-bit', mode: cs.MODE_64 },
+          ],
+          [cs.ARCH_PPC]: [
+            { label: 'PPC32 (big-endian)',    mode: cs.MODE_32 | cs.MODE_BIG_ENDIAN },
+            { label: 'PPC32 (little-endian)', mode: cs.MODE_32 },
+            { label: 'PPC64 (big-endian)',    mode: cs.MODE_64 | cs.MODE_BIG_ENDIAN },
+            { label: 'PPC64 (little-endian)', mode: cs.MODE_64 },
+          ],
+          [cs.ARCH_SPARC]: [
+            { label: 'SPARC',    mode: cs.MODE_BIG_ENDIAN },
+            { label: 'SPARC V9', mode: cs.MODE_BIG_ENDIAN | cs.MODE_V9 },
+          ],
+          [cs.ARCH_SYSZ]: [
+            { label: 'SystemZ', mode: cs.MODE_BIG_ENDIAN },
+          ],
+          [cs.ARCH_XCORE]: [
+            { label: 'XCore', mode: cs.MODE_BIG_ENDIAN },
+          ],
+          [cs.ARCH_M68K]: [
+            { label: 'M68000', mode: cs.MODE_BIG_ENDIAN | cs.MODE_M68K_000 },
+            { label: 'M68010', mode: cs.MODE_BIG_ENDIAN | cs.MODE_M68K_010 },
+            { label: 'M68020', mode: cs.MODE_BIG_ENDIAN | cs.MODE_M68K_020 },
+            { label: 'M68030', mode: cs.MODE_BIG_ENDIAN | cs.MODE_M68K_030 },
+            { label: 'M68040', mode: cs.MODE_BIG_ENDIAN | cs.MODE_M68K_040 },
+            { label: 'M68060', mode: cs.MODE_BIG_ENDIAN | cs.MODE_M68K_060 },
+          ],
+          [cs.ARCH_TMS320C64X]: [
+            { label: 'TMS320C64x', mode: cs.MODE_BIG_ENDIAN },
+          ],
+          [cs.ARCH_M680X]: [
+            { label: 'CPU12',  mode: cs.MODE_M680X_CPU12 },
+            { label: 'HCS08',  mode: cs.MODE_M680X_HCS08 },
+            { label: 'HD6301', mode: cs.MODE_M680X_6301 },
+            { label: 'HD6309', mode: cs.MODE_M680X_6309 },
+            { label: 'M6800',  mode: cs.MODE_M680X_6800 },
+            { label: 'M6801',  mode: cs.MODE_M680X_6801 },
+            { label: 'M6805',  mode: cs.MODE_M680X_6805 },
+            { label: 'M6808',  mode: cs.MODE_M680X_6808 },
+            { label: 'M6809',  mode: cs.MODE_M680X_6809 },
+            { label: 'M6811',  mode: cs.MODE_M680X_6811 },
+          ],
+          [cs.ARCH_EVM]: [
+            { label: 'EVM', mode: 0 },
+          ],
+          [cs.ARCH_MOS65XX]: [
+            { label: '6502',   mode: cs.MODE_MOS65XX_6502 },
+            { label: '65816',  mode: cs.MODE_MOS65XX_65816_LONG_MX },
+            { label: '65C02',  mode: cs.MODE_MOS65XX_65C02 },
+            { label: 'W65C02', mode: cs.MODE_MOS65XX_W65C02 },
+          ],
+          [cs.ARCH_WASM]: [
+            { label: 'WebAssembly', mode: 0 },
+          ],
+          [cs.ARCH_BPF]: [
+            { label: 'cBPF (classic)',  mode: cs.MODE_BPF_CLASSIC },
+            { label: 'eBPF (extended)', mode: cs.MODE_BPF_EXTENDED },
+          ],
+          [cs.ARCH_RISCV]: [
+            { label: 'RISC-V 32', mode: cs.MODE_RISCV32 },
+            { label: 'RISC-V 64', mode: cs.MODE_RISCV64 },
+          ],
+          [cs.ARCH_SH]: [
+            { label: 'SH2',  mode: cs.MODE_SH2 },
+            { label: 'SH2A', mode: cs.MODE_SH2A },
+            { label: 'SH3',  mode: cs.MODE_SH3 },
+            { label: 'SH4',  mode: cs.MODE_SH4 },
+            { label: 'SH4A', mode: cs.MODE_SH4A },
+          ],
+          [cs.ARCH_TRICORE]: [
+            { label: 'TriCore 1.1',   mode: cs.MODE_TRICORE_110 },
+            { label: 'TriCore 1.2',   mode: cs.MODE_TRICORE_120 },
+            { label: 'TriCore 1.3',   mode: cs.MODE_TRICORE_130 },
+            { label: 'TriCore 1.3.1', mode: cs.MODE_TRICORE_131 },
+            { label: 'TriCore 1.6',   mode: cs.MODE_TRICORE_160 },
+            { label: 'TriCore 1.6.1', mode: cs.MODE_TRICORE_161 },
+            { label: 'TriCore 1.6.2', mode: cs.MODE_TRICORE_162 },
+          ],
+        };
+
+        // Active disassembler, recreated when architecture or mode change
         let d = null;
+
+        // Update the mode dropdown with the valid modes for the selected architecture
+        function populateModes() {
+          elMode.textContent = '';
+          ARCH_MODES[elArchitecture.value].forEach((m) => {
+            const opt = document.createElement('option');
+            opt.value = m.mode;
+            opt.textContent = m.label;
+            elMode.appendChild(opt);
+          });
+        }
 
         function capstoneConfigure() {
           if (d) {
@@ -313,15 +409,8 @@ MCapstone().then((cs) => {
             d = null;
           }
           const arch = parseInt(elArchitecture.value, 10);
-          const mode = parseInt(elEndianness.value, 10) | parseInt(elMode.value, 10);
-          try {
-            d = new cs.Capstone(arch, mode);
-            elConfigError.classList.add('d-none');
-            [elArchitecture, elEndianness, elMode].forEach((el) => el.classList.remove('is-invalid'));
-          } catch (e) {
-            elConfigError.classList.remove('d-none');
-            [elArchitecture, elEndianness, elMode].forEach((el) => el.classList.add('is-invalid'));
-          }
+          const mode = parseInt(elMode.value, 10);
+          d = new cs.Capstone(arch, mode);
         };
 
         function capstoneRender() {
@@ -331,6 +420,7 @@ MCapstone().then((cs) => {
           }
           const trimmedBuffer = elBuffer.value.replace(/[^a-fA-F0-9]/g, '');
           if (trimmedBuffer.length % 2 !== 0) {
+            elBuffer.classList.toggle('is-invalid', true);
             return;
           }
           const csBuffer = [];
@@ -339,7 +429,15 @@ MCapstone().then((cs) => {
           }
           const hexOffset = elOffset.value.replace(/[^a-fA-F0-9]/g, '');
           const offset = hexOffset ? BigInt('0x' + hexOffset) : 0n;
-          const instructions = d.disasm(csBuffer, offset);
+
+          let instructions;
+          try {
+            instructions = d.disasm(csBuffer, offset);
+            elBuffer.classList.toggle('is-invalid', false);
+          } catch (e) {
+            elBuffer.classList.toggle('is-invalid', true);
+            return;
+          }
 
           instructions.forEach((instr) => {
             const bytes = instr.bytes.map((b) => hexadecimal(b, 2)).join(' ');
@@ -352,12 +450,16 @@ MCapstone().then((cs) => {
           });
         };
 
-        // Architectural changes require rebuilding the disassembler
-        [elArchitecture, elEndianness, elMode].forEach((el) => {
-          el.addEventListener('change', () => {
-            capstoneConfigure();
-            capstoneRender();
-          });
+        // Changing the architecture rebuilds the mode list; both it and a mode
+        // change require recreating the disassembler.
+        elArchitecture.addEventListener('change', () => {
+          populateModes();
+          capstoneConfigure();
+          capstoneRender();
+        });
+        elMode.addEventListener('change', () => {
+          capstoneConfigure();
+          capstoneRender();
         });
         // Offset/buffer changes only require re-rendering
         elOffset.addEventListener('input', capstoneRender);
@@ -367,8 +469,8 @@ MCapstone().then((cs) => {
         elOffset.value       = "10000";
         elBuffer.value       = "55 31 D2 89 E5 8B 45 08";
         elArchitecture.value = cs.ARCH_X86;
-        elEndianness.value   = cs.MODE_LITTLE_ENDIAN;
-        elMode.value         = cs.MODE_64;
+        populateModes();
+        elMode.value         = cs.MODE_32;
         capstoneConfigure();
         capstoneRender();
       });
